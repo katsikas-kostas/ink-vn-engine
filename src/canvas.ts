@@ -68,6 +68,11 @@ export class Canvas {
         this.ctx.fillText(text, position.X, position.Y, maxWidth);
     }
 
+    MeasureTextWidth(text : string) : number {
+        this.ctx.font = "24px sans-serif";
+        return this.ctx.measureText(text).width;
+    }
+
     get OnClick() : IEvent<Canvas, Point> {
         return this._onClick.asEvent();
     }

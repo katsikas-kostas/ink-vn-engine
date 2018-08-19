@@ -56,11 +56,22 @@ export class VisualNovInk {
         switch (this.state) {
             case State.TextAppearing: {
                 const text = (<TextScreen>this.currentScreen).Text;
-                if (text.length >= this.story.currentText.length) {
+                const currentText = this.story.currentText;
+                if (text.length >= currentText.length) {
                     this.changeState(State.Waiting);
                     this.step(timestamp);
                 } else {
-                    (<TextScreen>this.currentScreen).Text += this.story.currentText.slice(text.length, text.length + 1);
+                    let c = currentText.slice(text.length, text.length + 1);
+                    (<TextScreen>this.currentScreen).Text += c
+                    if (c == " " && text.length + 2 < currentText.length) {
+                        let n = text.length;
+                        while (currentText[n] == " " && n < currentText.length) { ++n; }
+                        if (n < currentText.length) {
+                            while (currentText[n] != " " && n < currentText.length) { ++n; }
+                        }
+                        (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
+
+                    }
                     this.currentTimeout = setTimeout(() => this.requestStep(), 1000 / this.textSpeed);
                 }
                 break;
