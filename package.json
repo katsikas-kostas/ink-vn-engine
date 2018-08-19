@@ -1,7 +1,6 @@
 {
   "name": "VisualNov-Ink",
   "version": "0.0.1",
-  "main": "index.js",
   "author": "Paul Joannon <hello@pauljoannon.com>",
   "license": "MIT",
   "dependencies": {

@@ -6,14 +6,16 @@ function showHello(divName: string, name: string) {
     elt.innerText = sayHello(name);
 }
 
-fetch("story.json").then((response) => response.text()).then((rawStory) => {
-    console.log(rawStory);
-    let story = new InkJs.Story(rawStory);
-    console.log(story);
-    if (story.canContinue) {
-        story.Continue();
-        showHello("greeting", story.currentText);
-    } else {    
-        showHello("greeting", ":/");
+export class VisualNovInk {
+    constructor(story_filename : string) {
+        fetch(story_filename).then((response) => response.text()).then((rawStory) => {
+            let story = new InkJs.Story(rawStory);
+            if (story.canContinue) {
+                story.Continue();
+                showHello("greeting", story.currentText);
+            } else {    
+                showHello("greeting", ":/");
+            }
+        });
     }
-});
+}

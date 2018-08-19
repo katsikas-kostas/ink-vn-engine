@@ -10,6 +10,7 @@ let bundler;
 function bundles(profile) {
     if (bundler == undefined) {
         var _browserify = browserify({
+            standalone: 'VisualNovInk',
             basedir: ".",
             debug: true,
             entries: ["src/main.ts"],
