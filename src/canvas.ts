@@ -57,19 +57,19 @@ export class Canvas {
         this.ctx.fillRect(position.X, position.Y, size.X, size.Y);
     }
 
-    DrawText0(text : string, color : string, maxWidth? : number) : void {
-        this.DrawText(text, new Point(), color, maxWidth);
+    DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
+        this.DrawText(text, new Point(), color, fontSize, maxWidth);
     }
 
-    DrawText(text : string, position : Point, color : string, maxWidth? : number) : void {
+    DrawText(text : string, position : Point, color : string, fontSize : number, maxWidth? : number) : void {
         this.ctx.fillStyle = color;
-        this.ctx.font = "24px sans-serif";
+        this.ctx.font = `${fontSize}px sans-serif`;
         this.ctx.textBaseline = "top";
         this.ctx.fillText(text, position.X, position.Y, maxWidth);
     }
 
     MeasureTextWidth(text : string) : number {
-        this.ctx.font = "24px sans-serif";
+        // We measure with the last font used in the context
         return this.ctx.measureText(text).width;
     }
 

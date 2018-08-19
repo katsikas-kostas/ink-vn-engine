@@ -6,6 +6,12 @@ export interface TextBoxConfiguration {
     OuterMargin : Point
     InnerMargin : Point
     Height : number
+    FontSize? : number
+}
+
+const defaultTextBoxConfiguration : TextBoxConfiguration = {
+    OuterMargin : new Point(0), InnerMargin : new Point(0), Height : 0, // These are never used
+    FontSize : 24
 }
 
 const REWRAP_THIS_LINE = "<[{REWRAP_THIS_LINE}]>"
@@ -16,6 +22,8 @@ class TextBox {
     private innerMargin : Point;
     private innerSize : Point;
 
+    private fontSize : number;
+
     private textLines : [string] = [""];
     private nextWord : string;
 
@@ -24,6 +32,8 @@ class TextBox {
         this.size = size;
         this.innerMargin = configuration.InnerMargin;
         this.innerSize = this.size.Sub(this.innerMargin.Mult(new Point(2)));
+
+        this.fontSize = configuration.FontSize || defaultTextBoxConfiguration.FontSize;
     }
 
     get Text() : string {
@@ -87,7 +97,13 @@ class TextBox {
         }
 
         for (let i = 0; i < this.textLines.length; ++i) {
-            canvas.DrawText(this.textLines[i], new Point(0, i * (24 * 1.42857)), "black", this.innerSize.X); // This is the golden ratio, on line-height and font-size
+            canvas.DrawText(
+                this.textLines[i],
+                new Point(0, i * (24 * 1.42857)),
+                "black",
+                this.fontSize,
+                this.innerSize.X
+            ); // This is the golden ratio, on line-height and font-size
         }
 
         canvas.Restore();
