@@ -1,8 +1,8 @@
 export class Canvas {
-    element : HTMLCanvasElement;
-    ctx : CanvasRenderingContext2D;
+    private element : HTMLCanvasElement;
+    private ctx : CanvasRenderingContext2D;
 
-    textColor : string = "black";
+    private textColor : string = "black";
 
     constructor(container_id : string, width : number, height : number) {
         const container = document.getElementById(container_id);

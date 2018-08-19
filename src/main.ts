@@ -1,5 +1,5 @@
-import { Canvas } from "./canvas";
 import * as InkJs from "inkjs";
+import { Canvas } from "./canvas";
 
 enum State {
     Waiting,
@@ -10,12 +10,12 @@ export class VisualNovInk {
     story : InkJs.Story;
     canvas : Canvas;
 
-    state : State;
+    private state : State;
 
-    currentText : string;
-    textSpeed : number = 20; // In char per second
-    currentAnimationRequest : number;
-    currentTimeout : number;
+    private currentText : string;
+    private textSpeed : number = 20; // In char per second
+    private currentAnimationRequest : number;
+    private currentTimeout : number;
 
     constructor(story_filename : string, container_id : string, width : number, height : number) {
         this.canvas = new Canvas(container_id, width, height);
@@ -26,7 +26,7 @@ export class VisualNovInk {
         });
     }
 
-    continue() : void {
+    private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
             this.state = State.TextAppearing;
@@ -37,7 +37,7 @@ export class VisualNovInk {
         }
     }
 
-    step(timestamp : number) : void {
+    private step(timestamp : number) : void {
         this.currentAnimationRequest = null;
         this.currentTimeout = null;
 
@@ -84,7 +84,7 @@ export class VisualNovInk {
         }
     }
 
-    requestStep() : void {
+    private requestStep() : void {
         this.currentAnimationRequest = window.requestAnimationFrame(this.step.bind(this));
     }
 }
