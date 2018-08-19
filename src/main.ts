@@ -1,6 +1,8 @@
 import * as InkJs from "inkjs";
 import { Canvas } from "./canvas";
 import { Point } from "./point";
+import { Screen } from "./screens/screen";
+import { TextScreen } from "./screens/textscreen";
 
 enum State {
     Waiting,
@@ -13,25 +15,33 @@ export class VisualNovInk {
 
     private state : State;
 
-    private currentText : string;
     private textSpeed : number = 20; // In char per second
     private currentAnimationRequest : number;
     private currentTimeout : number;
+
+    private currentScreen : Screen;
 
     constructor(story_filename : string, container_id : string, width : number, height : number) {
         this.canvas = new Canvas(container_id, width, height);
 
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
+
+            this.currentScreen = new TextScreen(this.canvas.Size, {
+                OuterMargin : new Point(50),
+                InnerMargin : new Point(15),
+                Height : 200
+            });
+
+            this.canvas.OnClick.subscribe(this.click.bind(this));
+
             this.continue();
-            this.canvas.onClick.subscribe(this.click.bind(this));
         });
     }
 
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
-            this.currentText = "";
             this.changeState(State.TextAppearing);
         } else {
         }
@@ -45,25 +55,25 @@ export class VisualNovInk {
 
         switch (this.state) {
             case State.TextAppearing: {
-                if (this.currentText.length >= this.story.currentText.length) {
+                const text = (<TextScreen>this.currentScreen).Text;
+                if (text.length >= this.story.currentText.length) {
                     this.changeState(State.Waiting);
                     this.step(timestamp);
                 } else {
-                    this.currentText += this.story.currentText.slice(this.currentText.length, this.currentText.length + 1);
-                    this.canvas.DrawText(this.currentText);
+                    (<TextScreen>this.currentScreen).Text += this.story.currentText.slice(text.length, text.length + 1);
                     this.currentTimeout = setTimeout(() => this.requestStep(), 1000 / this.textSpeed);
                 }
                 break;
             }
             case State.Waiting: {
-                this.canvas.DrawText(this.currentText);
                 break;
             }
         }
+
+        this.currentScreen.Draw(this.canvas);
     }
 
     private click(sender : Canvas, clickPosition : Point) : void {
-        console.log(clickPosition);
         switch (this.state) {
             case State.TextAppearing: {
                 // Skip apparition
@@ -74,7 +84,7 @@ export class VisualNovInk {
                     window.clearTimeout(this.currentTimeout);
                     this.currentTimeout = null;
                 }
-                this.currentText = this.story.currentText;
+                (<TextScreen>this.currentScreen).Text = this.story.currentText;
                 this.changeState(State.Waiting);
                 break;
             }
@@ -87,6 +97,12 @@ export class VisualNovInk {
 
     private changeState(newState : State) : void {
         this.state = newState;
+        switch (this.state) {
+            case State.TextAppearing: {
+                (<TextScreen>this.currentScreen).Text = "";
+                break;
+            }
+        }
         this.requestStep();
     }
 

@@ -7,8 +7,6 @@ export class Canvas {
 
     private _onClick : EventDispatcher<Canvas, Point> = new EventDispatcher<Canvas, Point>();
 
-    private textColor : string = "black";
-
     constructor(container_id : string, width : number, height : number) {
         const container = document.getElementById(container_id);
 
@@ -32,17 +30,45 @@ export class Canvas {
         this.Clear();
     }
 
+    get Size() : Point {
+        return new Point(this.element.width, this.element.height);
+    }
+
     Clear() : void {
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
     }
 
-    DrawText(text : string) : void {
-        this.ctx.fillStyle = this.textColor;
-        this.ctx.font = "24px sans-serif";
-        this.ctx.fillText(text, 0, 200, this.element.width);
+    Translate(position : Point) : void {
+        this.Restore();
+        this.ctx.save();
+        this.ctx.translate(position.X, position.Y);
     }
 
-    get onClick() : IEvent<Canvas, Point> {
+    Restore() : void {
+        this.ctx.restore();
+    }
+
+    DrawRect0(size : Point, color : string) : void {
+        this.DrawRect(new Point(), size, color);
+    }
+
+    DrawRect(position : Point, size : Point, color : string) : void {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(position.X, position.Y, size.X, size.Y);
+    }
+
+    DrawText0(text : string, color : string, maxWidth? : number) : void {
+        this.DrawText(text, new Point(), color, maxWidth);
+    }
+
+    DrawText(text : string, position : Point, color : string, maxWidth? : number) : void {
+        this.ctx.fillStyle = color;
+        this.ctx.font = "24px sans-serif";
+        this.ctx.textBaseline = "top";
+        this.ctx.fillText(text, position.X, position.Y, maxWidth);
+    }
+
+    get OnClick() : IEvent<Canvas, Point> {
         return this._onClick.asEvent();
     }
 
