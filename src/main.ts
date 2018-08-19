@@ -29,10 +29,9 @@ export class VisualNovInk {
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
-            this.state = State.TextAppearing;
             this.currentText = "";
-            this.requestStep();
             this.canvas.element.onclick = this.click.bind(this);
+            this.changeState(State.TextAppearing);
         } else {
         }
     }
@@ -46,7 +45,8 @@ export class VisualNovInk {
         switch (this.state) {
             case State.TextAppearing: {
                 if (this.currentText.length >= this.story.currentText.length) {
-                    this.state = State.Waiting;
+                    this.changeState(State.Waiting);
+                    this.step(timestamp);
                 } else {
                     this.currentText += this.story.currentText.slice(this.currentText.length, this.currentText.length + 1);
                     this.canvas.DrawText(this.currentText);
@@ -72,9 +72,8 @@ export class VisualNovInk {
                     window.clearTimeout(this.currentTimeout);
                     this.currentTimeout = null;
                 }
-                this.state = State.Waiting;
                 this.currentText = this.story.currentText;
-                this.requestStep();
+                this.changeState(State.Waiting);
                 break;
             }
             case State.Waiting: {
@@ -82,6 +81,11 @@ export class VisualNovInk {
                 break;
             }
         }
+    }
+
+    private changeState(newState : State) : void {
+        this.state = newState;
+        this.requestStep();
     }
 
     private requestStep() : void {
