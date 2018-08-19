@@ -1,5 +1,6 @@
 import * as InkJs from "inkjs";
 import { Canvas } from "./canvas";
+import { Point } from "./point";
 
 enum State {
     Waiting,
@@ -23,6 +24,7 @@ export class VisualNovInk {
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
             this.continue();
+            this.canvas.onClick.subscribe(this.click.bind(this));
         });
     }
 
@@ -30,7 +32,6 @@ export class VisualNovInk {
         if (this.story.canContinue) {
             this.story.Continue();
             this.currentText = "";
-            this.canvas.element.onclick = this.click.bind(this);
             this.changeState(State.TextAppearing);
         } else {
         }
@@ -61,7 +62,8 @@ export class VisualNovInk {
         }
     }
 
-    click() : void {
+    private click(sender : Canvas, clickPosition : Point) : void {
+        console.log(clickPosition);
         switch (this.state) {
             case State.TextAppearing: {
                 // Skip apparition

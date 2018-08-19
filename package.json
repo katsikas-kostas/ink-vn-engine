@@ -4,7 +4,8 @@
   "author": "Paul Joannon <hello@pauljoannon.com>",
   "license": "MIT",
   "dependencies": {
-    "inkjs": "^1.7.1"
+    "inkjs": "^1.7.1",
+    "strongly-typed-events": "^1.4.6"
   },
   "devDependencies": {
     "browserify": "^16.2.2",
