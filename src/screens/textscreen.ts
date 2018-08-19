@@ -87,7 +87,7 @@ class TextBox {
     Draw(canvas : Canvas) : void {
         canvas.Translate(this.position);
 
-        canvas.DrawRect0(this.size, "cyan");
+        canvas.DrawRect0(this.size, "black");
 
         canvas.Translate(this.position.Add(this.innerMargin));
 
@@ -99,8 +99,8 @@ class TextBox {
         for (let i = 0; i < this.textLines.length; ++i) {
             canvas.DrawText(
                 this.textLines[i],
-                new Point(0, i * (24 * 1.42857)),
-                "black",
+                new Point(0, i * (this.fontSize * 1.42857)),
+                "white",
                 this.fontSize,
                 this.innerSize.X
             ); // This is the golden ratio, on line-height and font-size
@@ -113,8 +113,9 @@ class TextBox {
 export class TextScreen extends Screen {
     private textBox : TextBox;
 
-    // @ts-ignore
     constructor(screenSize : Point, textBoxConfiguration : TextBoxConfiguration) {
+        super()
+
         let textBoxSize = new Point(
             screenSize.X - (textBoxConfiguration.OuterMargin.X * 2),
             textBoxConfiguration.Height
@@ -123,7 +124,6 @@ export class TextScreen extends Screen {
             textBoxConfiguration.OuterMargin.X,
             screenSize.Y - textBoxConfiguration.OuterMargin.Y - textBoxConfiguration.Height
         );
-        // @ts-ignore
         this.textBox = new TextBox(textBoxPosition, textBoxSize, textBoxConfiguration);
     }
 
@@ -140,6 +140,8 @@ export class TextScreen extends Screen {
     }
 
     Draw(canvas : Canvas) : void {
+        super.Draw(canvas);
+
         this.textBox.Draw(canvas);
     }
 }

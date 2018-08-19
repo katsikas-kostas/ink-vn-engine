@@ -19,7 +19,6 @@ export class Canvas {
 
         this.element.width = width;
         this.element.height = height;
-        this.element.style.border = "1px solid black";
 
         this.ctx = this.element.getContext("2d");
         if (!this.ctx) {
@@ -55,6 +54,10 @@ export class Canvas {
     DrawRect(position : Point, size : Point, color : string) : void {
         this.ctx.fillStyle = color;
         this.ctx.fillRect(position.X, position.Y, size.X, size.Y);
+    }
+
+    DrawBackgroundImage(image : ImageBitmap) : void {
+        this.ctx.drawImage(image, 0, 0, this.element.width, this.element.height);
     }
 
     DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
