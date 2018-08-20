@@ -1,3 +1,8 @@
+export interface Rect {
+    Position : Point,
+    Size : Point
+}
+
 export class Point {
     private x : number;
     private y : number;
@@ -36,5 +41,14 @@ export class Point {
 
     Mult(point : Point) : Point {
         return new Point(this.X * point.X, this.Y * point.Y);
+    }
+
+    Div(point : Point) : Point {
+        return new Point(this.X / point.X, this.Y / point.Y);
+    }
+
+    IsInRect(rect : Rect) {
+        return this.X >= rect.Position.X && this.X <= rect.Position.Add(rect.Size).X
+            && this.Y >= rect.Position.Y && this.Y <= rect.Position.Add(rect.Size).Y;
     }
 }
