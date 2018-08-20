@@ -3,6 +3,7 @@ import { Canvas } from "./canvas";
 import { Point } from "./point";
 import { Screen } from "./screens/screen";
 import { TextScreen } from "./screens/textscreen";
+import { Background } from "./screens/background";
 
 enum State {
     Waiting,
@@ -19,6 +20,7 @@ export class VisualNovInk {
     private currentAnimationRequest : number;
     private currentTimeout : number;
 
+    private background : Background;
     private currentScreen : Screen;
 
     constructor(story_filename : string, container_id : string, width : number, height : number) {
@@ -28,6 +30,8 @@ export class VisualNovInk {
             this.story = new InkJs.Story(rawStory);
 
             this.currentScreen = new TextScreen(this.canvas.Size, {
+            this.background = new Background("images/backgrounds/club.png");
+            
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(15),
                 Height : 200
@@ -81,6 +85,7 @@ export class VisualNovInk {
             }
         }
 
+        this.background.Draw(this.canvas);
         this.currentScreen.Draw(this.canvas);
     }
 

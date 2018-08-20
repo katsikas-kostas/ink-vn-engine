@@ -140,8 +140,6 @@ export class TextScreen extends Screen {
     }
 
     Draw(canvas : Canvas) : void {
-        super.Draw(canvas);
-
         this.textBox.Draw(canvas);
     }
 }
