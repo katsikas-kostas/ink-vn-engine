@@ -3,11 +3,13 @@ import { Canvas } from "./canvas";
 import { Point } from "./point";
 import { Screen } from "./screens/screen";
 import { TextScreen } from "./screens/textscreen";
+import { ChoiceScreen } from "./screens/choicescreen";
 import { Background } from "./screens/background";
 
 enum State {
     Waiting,
-    TextAppearing
+    TextAppearing,
+    Choices
 }
 
 export class VisualNovInk {
@@ -22,6 +24,8 @@ export class VisualNovInk {
 
     private background : Background;
     private currentScreen : Screen;
+    private textScreen : TextScreen;
+    private choiceScreen : ChoiceScreen;
 
     constructor(story_filename : string, container_id : string, width : number, height : number) {
         this.canvas = new Canvas(container_id, width, height);
@@ -29,13 +33,14 @@ export class VisualNovInk {
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
 
-            this.currentScreen = new TextScreen(this.canvas.Size, {
             this.background = new Background("images/backgrounds/club.png");
             
+            this.textScreen = new TextScreen(this.canvas.Size, {
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(15),
                 Height : 200
             });
+            this.choiceScreen = new ChoiceScreen
 
             this.canvas.OnClick.subscribe(this.click.bind(this));
 
@@ -46,7 +51,13 @@ export class VisualNovInk {
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
-            this.changeState(State.TextAppearing);
+                this.changeState(State.TextAppearing, () => {
+                    (<TextScreen>this.currentScreen).Text = "";
+                });
+        } else if (this.story.currentChoices.length > 0) {
+            this.changeState(State.Choices, () => {
+                (<ChoiceScreen>this.currentScreen).Choices = this.story.currentChoices;
+            });
         } else {
         }
     }
@@ -58,6 +69,9 @@ export class VisualNovInk {
         this.canvas.Clear();
 
         switch (this.state) {
+            case State.Waiting: {
+                break;
+            }
             case State.TextAppearing: {
                 const text = (<TextScreen>this.currentScreen).Text;
                 const currentText = this.story.currentText;
@@ -80,7 +94,7 @@ export class VisualNovInk {
                 }
                 break;
             }
-            case State.Waiting: {
+            case State.Choices: {
                 break;
             }
         }
@@ -111,14 +125,19 @@ export class VisualNovInk {
         }
     }
 
-    private changeState(newState : State) : void {
+    private changeState(newState : State, callback? : Function) : void {
         this.state = newState;
         switch (this.state) {
             case State.TextAppearing: {
-                (<TextScreen>this.currentScreen).Text = "";
+                this.currentScreen = this.textScreen;
+                break;
+            }
+            case State.Choices: {
+                this.currentScreen = this.choiceScreen;
                 break;
             }
         }
+        (callback || function() { }).call(this);
         this.requestStep();
     }
 
