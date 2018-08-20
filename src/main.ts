@@ -109,6 +109,10 @@ export class VisualNovInk {
 
     private click(sender : Canvas, clickPosition : Point) : void {
         switch (this.state) {
+            case State.Waiting: {
+                this.continue();
+                break;
+            }
             case State.TextAppearing: {
                 // Skip apparition
                 if (this.currentAnimationRequest != null) {
@@ -122,11 +126,16 @@ export class VisualNovInk {
                 this.changeState(State.Waiting);
                 break;
             }
-            case State.Waiting: {
-                this.continue();
+            case State.Choices: {
+                this.currentScreen.Click(clickPosition, this.validateChoice.bind(this));
                 break;
             }
         }
+    }
+
+    private validateChoice(choiceIndex : number) : void {
+        this.story.ChooseChoiceIndex(choiceIndex);
+        this.continue();
     }
 
     private changeState(newState : State, callback? : Function) : void {

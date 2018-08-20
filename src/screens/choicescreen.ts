@@ -82,6 +82,11 @@ export class ChoiceScreen extends Screen {
     }
 
     Click(clickPosition : Point, action : Function) : void {
+        for (const choiceBox of this.choiceBoxes) {
+            if (clickPosition.IsInRect(choiceBox.BoundingRect)) {
+                action(choiceBox.Id);
+                break;
+            }
         }
     }
 }
