@@ -51,9 +51,13 @@ export class VisualNovInk {
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
+            if (this.story.currentText.replace(/\s/g, "").length <= 0) {
+                this.continue();
+            } else {
                 this.changeState(State.TextAppearing, () => {
                     (<TextScreen>this.currentScreen).Text = "";
                 });
+            }
         } else if (this.story.currentChoices.length > 0) {
             this.changeState(State.Choices, () => {
                 (<ChoiceScreen>this.currentScreen).Choices = this.story.currentChoices;
