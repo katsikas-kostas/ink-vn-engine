@@ -80,5 +80,8 @@ export class ChoiceScreen extends Screen {
             choiceBox.Draw(canvas);
         }
     }
+
+    Click(clickPosition : Point, action : Function) : void {
+        }
     }
 }

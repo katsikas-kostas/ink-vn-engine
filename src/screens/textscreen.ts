@@ -87,7 +87,7 @@ class TextBox {
     Draw(canvas : Canvas) : void {
         canvas.Translate(this.position);
 
-        canvas.DrawRect0(this.size, "black");
+        canvas.DrawRect0(this.size, "rgba(0.0, 0.0, 0.0, 0.6)");
 
         canvas.Translate(this.position.Add(this.innerMargin));
 
@@ -99,11 +99,11 @@ class TextBox {
         for (let i = 0; i < this.textLines.length; ++i) {
             canvas.DrawText(
                 this.textLines[i],
-                new Point(0, i * (this.fontSize * 1.42857)),
+                new Point(0, i * (this.fontSize * 1.42857)), // This is the golden ratio, on line-height and font-size
                 "white",
                 this.fontSize,
                 this.innerSize.X
-            ); // This is the golden ratio, on line-height and font-size
+            );
         }
 
         canvas.Restore();
@@ -141,5 +141,9 @@ export class TextScreen extends Screen {
 
     Draw(canvas : Canvas) : void {
         this.textBox.Draw(canvas);
+    }
+
+    Click(clickPosition : Point, action : Function) : void {
+        
     }
 }
