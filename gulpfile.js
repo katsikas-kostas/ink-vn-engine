@@ -3,9 +3,13 @@ var browserify = require("browserify");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 var tsify = require("tsify");
-var gutil = require("gulp-util");
+var log = require("fancy-log");
 
 let bundler;
+
+function error(err) {
+    log.error(`${err.name}: ${err.filename}(${err.line},${err.column}): ${err.message}`);
+}
 
 function bundles(profile) {
     if (bundler == undefined) {
@@ -27,6 +31,7 @@ function bundles(profile) {
 function bundle() {
     return bundler
         .bundle()
+        .on("error", error)
         .pipe(source("visualnov-ink.js"))
         .pipe(gulp.dest("dist"));
 }
@@ -37,6 +42,6 @@ gulp.task("watch", [] , function() {
     bundles("watch");
 
     bundler.on("update", bundle);
-    bundler.on("log", gutil.log);
+    bundler.on("log", log.info);
 });
 

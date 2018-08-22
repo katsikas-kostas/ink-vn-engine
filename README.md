@@ -57,6 +57,7 @@ Just include the lib in your HTML file and create a new `VisualNovInk` object, g
     </body>
 </html>
 ```
+
 ## Roadmap
 
 This is what is going to be implemented soon:
@@ -72,7 +73,26 @@ This is what is going to be implemented soon:
   * Music
   * SFX
 * Change text speed and other options on the go
+* Animate sprite entries / exits
 * WebGL?
+
+## Contributions
+
+Please feel free to create issues for new feature, enhancements or bugs. PRs are also welcome, obviously.  
+
+### How to build
+
+```sh
+$> npm install
+...
+
+$> gulp build
+...
+
+$> ls dist/
+visualnov-ink.js
+
+```
 
 ## License
 
