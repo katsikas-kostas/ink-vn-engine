@@ -1,6 +1,5 @@
 import { Screen } from "./screen";
 import { Canvas } from "../canvas";
-import { Point } from "../point";
 
 export class Background extends Screen {
     private backgroundImage : ImageBitmap;
@@ -28,9 +27,5 @@ export class Background extends Screen {
         if (this.backgroundImage != null) {
             canvas.DrawBackgroundImage(this.backgroundImage);
         }
-    }
-
-    Click(clickPosition : Point, action : Function) : void {
-        
     }
 }

@@ -1,4 +1,4 @@
-import { Screen } from "./screen";
+import { ClickableScreen } from "./screen";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
@@ -173,7 +173,7 @@ class NameBox {
     }
 }
 
-export class TextScreen extends Screen {
+export class TextScreen extends ClickableScreen {
     private textBox : TextBox;
     private nameBox : NameBox;
 

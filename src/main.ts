@@ -1,7 +1,7 @@
 import * as InkJs from "inkjs";
 import { Canvas } from "./canvas";
 import { Point } from "./point";
-import { Screen } from "./screens/screen";
+import { ClickableScreen } from "./screens/screen";
 import { TextScreen } from "./screens/textscreen";
 import { ChoiceScreen } from "./screens/choicescreen";
 import { Background } from "./screens/background";
@@ -23,7 +23,7 @@ export class VisualNovInk {
     private currentTimeout : number;
 
     private background : Background;
-    private currentScreen : Screen;
+    private currentScreen : ClickableScreen;
     private textScreen : TextScreen;
     private choiceScreen : ChoiceScreen;
 
@@ -42,7 +42,7 @@ export class VisualNovInk {
                 InnerMargin : new Point(15),
                 Height : 200
             });
-            this.choiceScreen = new ChoiceScreen
+            this.choiceScreen = new ChoiceScreen();
 
             this.canvas.OnClick.subscribe(this.click.bind(this));
 

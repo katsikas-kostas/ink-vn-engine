@@ -1,5 +1,5 @@
 import { Choice } from "inkjs";
-import { Screen } from "./screen";
+import { ClickableScreen } from "./screen";
 import { Canvas } from "../canvas";
 import { Point, Rect } from "../point";
 
@@ -55,7 +55,7 @@ class ChoiceBox {
     }
 }
 
-export class ChoiceScreen extends Screen {
+export class ChoiceScreen extends ClickableScreen {
     choices : Choice[] = []
 
     choiceBoxes : ChoiceBox[] = []
