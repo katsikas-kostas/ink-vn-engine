@@ -55,6 +55,10 @@ export class Characters extends Screen {
         this.characters.push(new Character(spriteURL, canvas.Size.X / 2))
     }
 
+    Remove() {
+        this.characters = [];
+    }
+
     Draw(canvas : Canvas) : void {
         for (const character of this.characters) {
             character.Draw(canvas);

@@ -158,7 +158,11 @@ export class VisualNovInk {
                             break;
                         }
                         case "sprite": {
-                            this.characters.Add(value, this.canvas);
+                            if (value.length > 0) {
+                                this.characters.Add(value, this.canvas);
+                            } else {
+                                this.characters.Remove();
+                            }
                             break;
                         }
                         case "name": {
