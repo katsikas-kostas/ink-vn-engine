@@ -37,8 +37,10 @@ export class VisualNovInk {
 
             this.speechScreen = new Layers.SpeechLayer(this.canvas.Size, {
                 OuterMargin : new Point(50),
-                InnerMargin : new Point(15),
-                Height : 200
+                InnerMargin : new Point(35),
+                Height : 200,
+                FontSize: 24,
+                FontColor: "white"
             });
             this.choiceScreen = new Layers.ChoiceLayer();
 

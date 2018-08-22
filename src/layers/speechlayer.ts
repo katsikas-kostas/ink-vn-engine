@@ -1,33 +1,35 @@
 import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
+import { BoxBackground, NinePatchBoxBackground } from "./boxbackgrounds";
 
 import { Config } from "../config";
 
-export interface BoxConfiguration {
+interface BoxConfiguration {
+    FontSize : number
+    FontColor : string
+}
+
+export interface SpeechBoxConfiguration extends BoxConfiguration {
     OuterMargin : Point
     InnerMargin : Point
     Height : number
-    BackgroundColor? : string
-    FontSize? : number
-    FontColor? : string
 }
 
-const defaultBoxConfiguration : BoxConfiguration = {
-    OuterMargin : new Point(0), InnerMargin : new Point(10), Height : 0,
-    BackgroundColor : "rgba(0.0, 0.0, 0.0, 0.6)",
-    FontSize : 24, FontColor : "white"
+interface NameBoxConfiguration extends BoxConfiguration {
+    Width : number
+    Height : number
 }
 
 const REWRAP_THIS_LINE = "<[{REWRAP_THIS_LINE}]>"
 
-class TextBox {
+class SpeechBox {
     private position : Point;
     private size : Point;
     private innerMargin : Point;
     private innerSize : Point;
 
-    private backgroundColor : string;
+    private boxBackground : BoxBackground;
 
     private fontSize : number;
     private fontColor : string;
@@ -35,16 +37,19 @@ class TextBox {
     private textLines : [string] = [""];
     private nextWord : string;
 
-    constructor(position : Point, size : Point, configuration : BoxConfiguration) {
+    constructor(position : Point, size : Point, configuration : SpeechBoxConfiguration) {
         this.position = position.Clone();
         this.size = size.Clone();
         this.innerMargin = configuration.InnerMargin;
         this.innerSize = this.size.Sub(this.innerMargin.Mult(new Point(2)));
 
-        this.backgroundColor = configuration.BackgroundColor || defaultBoxConfiguration.BackgroundColor;
+        this.boxBackground = new NinePatchBoxBackground(
+            "images/9patch.png",
+            this.size.Clone()
+        );
 
-        this.fontSize = configuration.FontSize || defaultBoxConfiguration.FontSize;
-        this.fontColor = configuration.FontColor || defaultBoxConfiguration.FontColor;
+        this.fontSize = configuration.FontSize;
+        this.fontColor = configuration.FontColor;
     }
 
     get Text() : string {
@@ -99,7 +104,7 @@ class TextBox {
     Draw(canvas : Canvas) : void {
         canvas.Translate(this.position);
 
-        canvas.DrawRect0(this.size, this.backgroundColor);
+        this.boxBackground.Draw(canvas);
 
         canvas.Translate(this.position.Add(this.innerMargin));
 
@@ -132,44 +137,37 @@ class NameBox {
     private fontSize : number;
     private fontColor : string;
 
-    private backgroundColor : string;
+    private backgroundURL : string = "images/9patch-small.png";
+    private boxBackground : BoxBackground;
 
-    constructor(position : Point, configuration : BoxConfiguration);
-    constructor(position : Point, configuration : BoxConfiguration, name? : string) {
-        this.size = configuration.InnerMargin.Mult(new Point(2.0));
+    constructor(position : Point, configuration : NameBoxConfiguration);
+    constructor(position : Point, configuration : NameBoxConfiguration, name? : string) {
+        this.size = new Point(configuration.Width, configuration.Height);
         this.position = position.Clone();
         this.position.Y -= this.size.Y;
 
-        this.innerMargin = configuration.InnerMargin.Clone();
+        this.innerMargin = this.size.Div(new Point(10, 10));
 
-        this.fontSize = configuration.FontSize || defaultBoxConfiguration.FontSize;
-        this.fontColor = configuration.FontColor || defaultBoxConfiguration.FontColor;
+        this.fontSize = configuration.FontSize;
+        this.fontColor = configuration.FontColor;
 
-        this.backgroundColor = configuration.BackgroundColor || defaultBoxConfiguration.BackgroundColor;
+        this.refreshBoxBackground();
     }
 
     set Name(name : string) {
         if (name != this.name) {
             this.name = name;
-            this.position.Y += this.size.Y;
-            this.size.X = 0;
-            this.size.Y = 0;
         }
+    }
+
+    refreshBoxBackground() : void {
+        this.boxBackground = new NinePatchBoxBackground(this.backgroundURL, this.size.Clone());
     }
 
     Draw(canvas : Canvas) : void {
         if (this.name.length > 0) {
-            if (this.size.X == 0 && this.size.Y == 0) {
-                canvas.DrawText0("", "transparent", this.fontSize);
-                // Must compute the size
-                this.size.X = canvas.MeasureTextWidth(this.name);
-                this.size.Y = this.fontSize * 1.42857;
-                this.size = this.size.Add(this.innerMargin.Mult(new Point(2.0)));
-                this.position.Y -= this.size.Y;
-            }
-
             canvas.Translate(this.position);
-            canvas.DrawRect0(this.size, this.backgroundColor);
+            this.boxBackground.Draw(canvas);
             canvas.DrawText(this.name, this.innerMargin, this.fontColor, this.fontSize, this.size.X);
             canvas.Restore();
         }
@@ -177,29 +175,34 @@ class NameBox {
 }
 
 export class SpeechLayer extends GameplayLayer {
-    private textBox : TextBox;
+    private textBox : SpeechBox;
     private nameBox : NameBox;
 
     private fullText : string;
     private textTime : number = 0;
     private textAppeared : boolean = false;
 
-    constructor(screenSize : Point, textBoxConfiguration : BoxConfiguration) {
+    constructor(screenSize : Point, speechBoxConfiguration : SpeechBoxConfiguration) {
         super()
 
         let textBoxSize = new Point(
-            screenSize.X - (textBoxConfiguration.OuterMargin.X * 2),
-            textBoxConfiguration.Height
+            screenSize.X - (speechBoxConfiguration.OuterMargin.X * 2),
+            speechBoxConfiguration.Height
         );
         let textBoxPosition = new Point(
-            textBoxConfiguration.OuterMargin.X,
-            screenSize.Y - textBoxConfiguration.OuterMargin.Y - textBoxConfiguration.Height
+            speechBoxConfiguration.OuterMargin.X,
+            screenSize.Y - speechBoxConfiguration.OuterMargin.Y - speechBoxConfiguration.Height
         );
-        this.textBox = new TextBox(textBoxPosition, textBoxSize, textBoxConfiguration);
+        this.textBox = new SpeechBox(textBoxPosition, textBoxSize, speechBoxConfiguration);
     
         this.nameBox = new NameBox(
-            textBoxPosition.Add(new Point(defaultBoxConfiguration.InnerMargin.X, 0.0)),
-            defaultBoxConfiguration
+            textBoxPosition.Add(new Point(70, 0)),
+            {
+                Width: 100,
+                Height: 40,
+                FontSize: 24,
+                FontColor: "black"
+            }
         );
     }
 

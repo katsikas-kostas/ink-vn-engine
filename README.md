@@ -72,7 +72,7 @@ This is what is going to be implemented soon:
 * Use pictures as text backgrounds
   * simple picture
   * repeating pattern
-  * 9 patch
+  * ~~9 patch~~ :heavy_check_mark:
 * Manage multiple sprites on screen
 * Highlight the speaking character's sprite
 * Manage audio

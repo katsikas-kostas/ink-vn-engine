@@ -20,8 +20,7 @@ export class Transition extends StepLayer {
     constructor(imageData : ImageData) {
         super();
 
-        const prom = createImageBitmap(imageData);
-        prom.then(image => this.image = image);
+        createImageBitmap(imageData).then(image => this.image = image);
     }
 
     get OnEnd() : IEvent<Transition, void> {

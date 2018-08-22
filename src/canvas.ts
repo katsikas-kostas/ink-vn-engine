@@ -1,6 +1,6 @@
 import { EventDispatcher, IEvent } from "strongly-typed-events";
 
-import { Point } from "./point";
+import { Point, Rect } from "./point";
 
 export class Canvas {
     private element : HTMLCanvasElement;
@@ -74,6 +74,16 @@ export class Canvas {
         this.ctx.drawImage(image, position.X, position.Y, image.width, image.height);
     }
 
+    DrawImageTo(image : ImageBitmap, source : Rect, destination : Rect) {
+        this.ctx.drawImage(
+            image,
+            source.Position.X, source.Position.Y,
+            source.Size.X, source.Size.Y,
+            destination.Position.X, destination.Position.Y,
+            destination.Size.X, destination.Size.Y
+        );
+    }
+
     DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
         this.DrawText(text, new Point(), color, fontSize, maxWidth);
     }
@@ -100,5 +110,24 @@ export class Canvas {
             ev.pageY - this.element.offsetTop
         );
         this._onClick.dispatchAsync(this, clickPosition);
+    }
+}
+
+export class HiddenCanvas extends Canvas {
+    private hiddenElement : HTMLElement
+
+    constructor(size : Point) {
+        const id = `c_${Math.random().toString().slice(2, 7)}`;
+        const hiddenElement = document.createElement("div");
+        hiddenElement.id = id;
+        document.body.appendChild(hiddenElement);
+
+        super(id, size);
+
+        this.hiddenElement = hiddenElement;
+    }
+
+    Destroy() : void {
+        this.hiddenElement.remove();
     }
 }
