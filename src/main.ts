@@ -5,6 +5,7 @@ import { Point } from "./point";
 import { Preloader } from "./preloader";
 
 import * as Layers from "./layers/layers";
+import { Config } from "./config";
 
 export class VisualNovInk {
     story : InkJs.Story;
@@ -23,11 +24,13 @@ export class VisualNovInk {
 
     private speakingCharacterName : string = "";
 
-    constructor(story_filename : string, container_id : string, width : number, height : number) {
-        this.canvas = new Canvas(container_id, width, height);
+    constructor(story_filename : string, container_id : string) {
+        this.canvas = new Canvas(container_id, Config.ScreenSize);
 
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
+            Config.Load(this.story.globalTags);
+            this.canvas.Size = Config.ScreenSize;
 
             this.background = new Layers.Background();
             this.characters = new Layers.Characters();

@@ -8,7 +8,7 @@ export class Canvas {
 
     private _onClick : EventDispatcher<Canvas, Point> = new EventDispatcher<Canvas, Point>();
 
-    constructor(container_id : string, width : number, height : number) {
+    constructor(container_id : string, size : Point) {
         const container = document.getElementById(container_id);
 
         if (container.tagName == "canvas") {
@@ -18,8 +18,8 @@ export class Canvas {
             container.appendChild(this.element);
         }
 
-        this.element.width = width;
-        this.element.height = height;
+        this.element.width = size.X;
+        this.element.height = size.Y;
 
         this.ctx = this.element.getContext("2d");
         if (!this.ctx) {
@@ -32,6 +32,11 @@ export class Canvas {
 
     get Size() : Point {
         return new Point(this.element.width, this.element.height);
+    }
+
+    set Size(size : Point) {
+        this.element.width = size.X;
+        this.element.height = size.Y;
     }
 
     Clear() : void {

@@ -8,7 +8,13 @@ This project is currently under heavy development, use at your own discretion.
 
 ### Write your ink file
 
-Write your story as you'd usually do it.  
+First, you should start your file with global configuration tags:
+```
+# screen_size: 1280x720
+# text_speed: 30
+```
+
+Then, write your story as you'd usually do it.  
 You should make an extensive use of tags to control what's displayed on screen.  
 
 * Backgrounds can be switched
@@ -41,7 +47,7 @@ Or it can be used like this! # Paulloz
 
 ### Include everything in your HTML
 
-Just include the lib in your HTML file and create a new `VisualNovInk` object, giving it your ink file, an HTML element ID (a canvas is going to be created within it) and your VN width and height.
+Just include the lib in your HTML file and create a new `VisualNovInk` object, giving it your ink file, an HTML element ID (a canvas is going to be created within it).
 
 ```html
 <!DOCTYPE html>
@@ -51,7 +57,7 @@ Just include the lib in your HTML file and create a new `VisualNovInk` object, g
         <script src="visualnov-ink.js"></script>
         <script type="text/javascript">
             window.onload = function() {
-                var vn = new VisualNovInk.VisualNovInk("story.json", "vn", 1280, 720);
+                var vn = new VisualNovInk.VisualNovInk("story.json", "vn");
             };
         </script>
     </body>
@@ -72,7 +78,6 @@ This is what is going to be implemented soon:
 * Manage audio
   * Music
   * SFX
-* Change text speed and other options on the go
 * Animate sprite entries / exits
 * WebGL?
 
