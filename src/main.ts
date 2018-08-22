@@ -123,22 +123,29 @@ export class VisualNovInk {
     }
 
     private computeTags() : void {
+        const getFinalValue = (value : string) => {
+            const valueMatch = value.match(/^\{(\w+)\}$/);
+            if (valueMatch != null) {
+                return this.story.variablesState.$(valueMatch[1]);
+            }
+            return value;
+        };
+
         const tags = this.story.currentTags;
         if (tags.length > 0) {
             for (let i = 0; i < tags.length; ++i) {
                 const match = tags[i].match(/^(\w+)\s*:\s*(.*)$/);
                 if (match != null) {
+                    // We need to know what tag it is
                     const key = match[1];
-
-                    let value = match[2];
-                    const valueMatch = value.match(/^\{(\w+)\}$/);
-                    if (valueMatch != null) {
-                        value = this.story.variablesState.$(valueMatch[1]);
-                    }
-
+                    const value = getFinalValue(match[2]);
                     switch (key) {
                         case "background": {
                             this.background.BackgroundImage = value;
+                            break;
+                        }
+                        case "sprite": {
+                            console.log(value);
                             break;
                         }
                         case "name": {
@@ -146,6 +153,9 @@ export class VisualNovInk {
                             break;
                         }
                     }
+                } else {
+                    // Unknown tags are treated as names
+                    this.speakingCharacterName = getFinalValue(tags[i]);
                 }
             }
         }
