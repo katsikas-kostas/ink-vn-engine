@@ -1,4 +1,4 @@
-# VisualNov'Ink
+# ink vn engine
 
 So, you always wanted to make visual novels using [ink](https://github.com/inkle/ink)? I got you covered.  
 
