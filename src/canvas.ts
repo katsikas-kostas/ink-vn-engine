@@ -1,4 +1,5 @@
 import { EventDispatcher, IEvent } from "strongly-typed-events";
+
 import { Point } from "./point";
 
 export class Canvas {
@@ -35,6 +36,10 @@ export class Canvas {
 
     Clear() : void {
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
+    }
+
+    GetImageData() : ImageData {
+        return this.ctx.getImageData(0, 0, this.Size.X, this.Size.Y);
     }
 
     Translate(position : Point) : void {

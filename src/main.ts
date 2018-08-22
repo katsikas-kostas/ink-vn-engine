@@ -11,6 +11,8 @@ import { ChoiceScreen } from "./screens/choicescreen";
 import { Background } from "./screens/background";
 import { Characters } from "./screens/characters";
 
+import { Transition } from "./screens/transition";
+
 enum State {
     Waiting,
     TextAppearing,
@@ -34,6 +36,8 @@ export class VisualNovInk {
     private currentScreen : ClickableScreen;
     private textScreen : TextScreen;
     private choiceScreen : ChoiceScreen;
+
+    private transition : Transition;
 
     private speakingCharacterName : string = "";
 
@@ -62,12 +66,15 @@ export class VisualNovInk {
     }
 
     private continue() : void {
+        if (this.transition != null) { return; }
+
         if (this.story.canContinue) {
             this.story.Continue();
 
             if (this.story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
+                console.log(this.story.currentText);
                 this.changeState(State.TextAppearing);
                 this.computeTags();
                 (<TextScreen>this.currentScreen).Text = "";
@@ -87,46 +94,54 @@ export class VisualNovInk {
 
         this.canvas.Clear();
 
-        switch (this.state) {
-            case State.Waiting: {
-                break;
-            }
-            case State.TextAppearing: {
-                this.textTime += delta;
+        if (this.transition != null) {
+            this.transition.Step(delta);
+        } else {
+            switch (this.state) {
+                case State.Waiting: {
+                    break;
+                }
+                case State.TextAppearing: {
+                    this.textTime += delta;
 
-                if (this.textTime >= 1000.0 / this.textSpeed) {
-                    const text = (<TextScreen>this.currentScreen).Text;
-                    const currentText = this.story.currentText;
-                    if (text.length >= currentText.length) {
-                        this.changeState(State.Waiting);
-                        this.step(timestamp);
-                    } else {
-                        let c = currentText.slice(text.length, text.length + 1);
-                        (<TextScreen>this.currentScreen).Text += c
-                        if (c == " " && text.length + 2 < currentText.length) {
-                            let n = text.length;
-                            while (currentText[n] == " " && n < currentText.length) { ++n; }
-                            if (n < currentText.length) {
-                                while (currentText[n] != " " && n < currentText.length) { ++n; }
+                    if (this.textTime >= 1000.0 / this.textSpeed) {
+                        const text = (<TextScreen>this.currentScreen).Text;
+                        const currentText = this.story.currentText;
+                        if (text.length >= currentText.length) {
+                            this.changeState(State.Waiting);
+                            this.step(timestamp);
+                        } else {
+                            let c = currentText.slice(text.length, text.length + 1);
+                            (<TextScreen>this.currentScreen).Text += c
+                            if (c == " " && text.length + 2 < currentText.length) {
+                                let n = text.length;
+                                while (currentText[n] == " " && n < currentText.length) { ++n; }
+                                if (n < currentText.length) {
+                                    while (currentText[n] != " " && n < currentText.length) { ++n; }
+                                }
+                                (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
+        
                             }
-                            (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
-    
                         }
+
+                        this.textTime = this.textTime - (1000.0 / this.textSpeed);
                     }
 
-                    this.textTime = this.textTime - (1000.0 / this.textSpeed);
+                    break;
                 }
-
-                break;
-            }
-            case State.Choices: {
-                break;
+                case State.Choices: {
+                    break;
+                }
             }
         }
 
         this.background.Draw(this.canvas);
         this.characters.Draw(this.canvas);
-        this.currentScreen.Draw(this.canvas);
+        if (this.transition != null) {
+            this.transition.Draw(this.canvas);
+        } else {
+            this.currentScreen.Draw(this.canvas);
+        }
 
         this.requestStep();
     }
@@ -169,6 +184,14 @@ export class VisualNovInk {
                             this.speakingCharacterName = value;
                             break;
                         }
+                        case "transition": {
+                            this.transition = new Transition(this.canvas.GetImageData());
+                            this.transition.OnEnd.subscribe((sender, args) => {
+                                this.transition = null;
+
+                            });
+                            break;
+                        }
                     }
                 } else {
                     // Unknown tags are treated as names
@@ -179,6 +202,8 @@ export class VisualNovInk {
     }
 
     private click(sender : Canvas, clickPosition : Point) : void {
+        if (this.transition != null) { return; }
+
         switch (this.state) {
             case State.Waiting: {
                 this.continue();
