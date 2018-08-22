@@ -74,7 +74,6 @@ export class VisualNovInk {
             if (this.story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
-                console.log(this.story.currentText);
                 this.changeState(State.TextAppearing);
                 this.computeTags();
                 (<TextScreen>this.currentScreen).Text = "";
