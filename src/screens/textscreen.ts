@@ -2,16 +2,19 @@ import { Screen } from "./screen";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
-export interface TextBoxConfiguration {
+export interface BoxConfiguration {
     OuterMargin : Point
     InnerMargin : Point
     Height : number
+    BackgroundColor? : string
     FontSize? : number
+    FontColor? : string
 }
 
-const defaultTextBoxConfiguration : TextBoxConfiguration = {
-    OuterMargin : new Point(0), InnerMargin : new Point(0), Height : 0, // These are never used
-    FontSize : 24
+const defaultBoxConfiguration : BoxConfiguration = {
+    OuterMargin : new Point(0), InnerMargin : new Point(10), Height : 0,
+    BackgroundColor : "rgba(0.0, 0.0, 0.0, 0.6)",
+    FontSize : 24, FontColor : "white"
 }
 
 const REWRAP_THIS_LINE = "<[{REWRAP_THIS_LINE}]>"
@@ -22,18 +25,24 @@ class TextBox {
     private innerMargin : Point;
     private innerSize : Point;
 
+    private backgroundColor : string;
+
     private fontSize : number;
+    private fontColor : string;
 
     private textLines : [string] = [""];
     private nextWord : string;
 
-    constructor(position : Point, size : Point, configuration : TextBoxConfiguration) {
-        this.position = position;
-        this.size = size;
+    constructor(position : Point, size : Point, configuration : BoxConfiguration) {
+        this.position = position.Clone();
+        this.size = size.Clone();
         this.innerMargin = configuration.InnerMargin;
         this.innerSize = this.size.Sub(this.innerMargin.Mult(new Point(2)));
 
-        this.fontSize = configuration.FontSize || defaultTextBoxConfiguration.FontSize;
+        this.backgroundColor = configuration.BackgroundColor || defaultBoxConfiguration.BackgroundColor;
+
+        this.fontSize = configuration.FontSize || defaultBoxConfiguration.FontSize;
+        this.fontColor = configuration.FontColor || defaultBoxConfiguration.FontColor;
     }
 
     get Text() : string {
@@ -87,7 +96,7 @@ class TextBox {
     Draw(canvas : Canvas) : void {
         canvas.Translate(this.position);
 
-        canvas.DrawRect0(this.size, "rgba(0.0, 0.0, 0.0, 0.6)");
+        canvas.DrawRect0(this.size, this.backgroundColor);
 
         canvas.Translate(this.position.Add(this.innerMargin));
 
@@ -100,7 +109,7 @@ class TextBox {
             canvas.DrawText(
                 this.textLines[i],
                 new Point(0, i * (this.fontSize * 1.42857)), // This is the golden ratio, on line-height and font-size
-                "white",
+                this.fontColor,
                 this.fontSize,
                 this.innerSize.X
             );
@@ -110,10 +119,65 @@ class TextBox {
     }
 }
 
+class NameBox {
+    private name : string;
+
+    private position : Point;
+    private size : Point;
+    private innerMargin : Point;
+
+    private fontSize : number;
+    private fontColor : string;
+
+    private backgroundColor : string;
+
+    constructor(position : Point, configuration : BoxConfiguration);
+    constructor(position : Point, configuration : BoxConfiguration, name? : string) {
+        this.size = configuration.InnerMargin.Mult(new Point(2.0));
+        this.position = position.Clone();
+        this.position.Y -= this.size.Y;
+
+        this.innerMargin = configuration.InnerMargin.Clone();
+
+        this.fontSize = configuration.FontSize || defaultBoxConfiguration.FontSize;
+        this.fontColor = configuration.FontColor || defaultBoxConfiguration.FontColor;
+
+        this.backgroundColor = configuration.BackgroundColor || defaultBoxConfiguration.BackgroundColor;
+    }
+
+    set Name(name : string) {
+        if (name != this.name) {
+            this.name = name;
+            this.position.Y += this.size.Y;
+            this.size.X = 0;
+            this.size.Y = 0;
+        }
+    }
+
+    Draw(canvas : Canvas) : void {
+        if (this.name.length > 0) {
+            if (this.size.X == 0 && this.size.Y == 0) {
+                canvas.DrawText0("", "transparent", this.fontSize);
+                // Must compute the size
+                this.size.X = canvas.MeasureTextWidth(this.name);
+                this.size.Y = this.fontSize * 1.42857;
+                this.size = this.size.Add(this.innerMargin.Mult(new Point(2.0)));
+                this.position.Y -= this.size.Y;
+            }
+
+            canvas.Translate(this.position);
+            canvas.DrawRect0(this.size, this.backgroundColor);
+            canvas.DrawText(this.name, this.innerMargin, this.fontColor, this.fontSize, this.size.X);
+            canvas.Restore();
+        }
+    }
+}
+
 export class TextScreen extends Screen {
     private textBox : TextBox;
+    private nameBox : NameBox;
 
-    constructor(screenSize : Point, textBoxConfiguration : TextBoxConfiguration) {
+    constructor(screenSize : Point, textBoxConfiguration : BoxConfiguration) {
         super()
 
         let textBoxSize = new Point(
@@ -125,6 +189,11 @@ export class TextScreen extends Screen {
             screenSize.Y - textBoxConfiguration.OuterMargin.Y - textBoxConfiguration.Height
         );
         this.textBox = new TextBox(textBoxPosition, textBoxSize, textBoxConfiguration);
+    
+        this.nameBox = new NameBox(
+            textBoxPosition.Add(new Point(defaultBoxConfiguration.InnerMargin.X, 0.0)),
+            defaultBoxConfiguration
+        );
     }
 
     get Text() : string {
@@ -135,12 +204,17 @@ export class TextScreen extends Screen {
         this.textBox.Text = text;
     }
 
+    set Name(name : string) {
+        this.nameBox.Name = name;
+    }
+
     set NextWord(nextWord : string) {
         this.textBox.NextWord = nextWord;
     }
 
     Draw(canvas : Canvas) : void {
         this.textBox.Draw(canvas);
+        this.nameBox.Draw(canvas);
     }
 
     Click(clickPosition : Point, action : Function) : void {
