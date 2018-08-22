@@ -33,7 +33,7 @@ export class VisualNovInk {
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
 
-            this.background = new Background("images/backgrounds/club.png");
+            this.background = new Background();
             
             this.textScreen = new TextScreen(this.canvas.Size, {
                 OuterMargin : new Point(50),
@@ -51,6 +51,7 @@ export class VisualNovInk {
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
+            this.computeTags();
             if (this.story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
@@ -105,6 +106,26 @@ export class VisualNovInk {
 
         this.background.Draw(this.canvas);
         this.currentScreen.Draw(this.canvas);
+    }
+
+    private computeTags() : void {
+        const tags = this.story.currentTags;
+        if (tags.length > 0) {
+            for (let i = 0; i < tags.length; ++i) {
+                const match = tags[i].match(/^(\w+)\s*:\s*(.*)$/);
+                if (match != null) {
+                    const key = match[1];
+
+                    let value = match[2];
+                    switch (key) {
+                        case "background": {
+                            this.background.BackgroundImage = value;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private click(sender : Canvas, clickPosition : Point) : void {
