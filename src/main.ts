@@ -2,6 +2,8 @@ import * as InkJs from "inkjs";
 import { Canvas } from "./canvas";
 import { Point } from "./point";
 
+import { Preloader } from "./preloader";
+
 import { ClickableScreen } from "./screens/screen";
 import { TextScreen } from "./screens/textscreen";
 import { ChoiceScreen } from "./screens/choicescreen";
@@ -144,9 +146,13 @@ export class VisualNovInk {
                 const match = tags[i].match(/^(\w+)\s*:\s*(.*)$/);
                 if (match != null) {
                     // We need to know what tag it is
-                    const key = match[1];
-                    const value = getFinalValue(match[2]);
+                    const key : string = match[1];
+                    const value : string = getFinalValue(match[2]);
                     switch (key) {
+                        case "preload": {
+                            value.split(",").forEach((_value) => Preloader.Preload(_value.trim()));
+                            break;
+                        }
                         case "background": {
                             this.background.BackgroundImage = value;
                             break;
