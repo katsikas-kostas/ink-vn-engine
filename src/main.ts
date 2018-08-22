@@ -27,6 +27,8 @@ export class VisualNovInk {
     private textScreen : TextScreen;
     private choiceScreen : ChoiceScreen;
 
+    private speakingCharacterName : string = "";
+
     constructor(story_filename : string, container_id : string, width : number, height : number) {
         this.canvas = new Canvas(container_id, width, height);
 
@@ -57,6 +59,7 @@ export class VisualNovInk {
             } else {
                 this.changeState(State.TextAppearing, () => {
                     (<TextScreen>this.currentScreen).Text = "";
+                    (<TextScreen>this.currentScreen).Name = this.speakingCharacterName;
                 });
             }
         } else if (this.story.currentChoices.length > 0) {
@@ -120,6 +123,10 @@ export class VisualNovInk {
                     switch (key) {
                         case "background": {
                             this.background.BackgroundImage = value;
+                            break;
+                        }
+                        case "name": {
+                            this.speakingCharacterName = value;
                             break;
                         }
                     }
