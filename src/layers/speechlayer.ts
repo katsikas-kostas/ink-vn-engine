@@ -2,6 +2,8 @@ import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
+import { Config } from "../config";
+
 export interface BoxConfiguration {
     OuterMargin : Point
     InnerMargin : Point
@@ -174,9 +176,13 @@ class NameBox {
     }
 }
 
-export class TextLayer extends GameplayLayer {
+export class SpeechLayer extends GameplayLayer {
     private textBox : TextBox;
     private nameBox : NameBox;
+
+    private fullText : string;
+    private textTime : number = 0;
+    private textAppeared : boolean = false;
 
     constructor(screenSize : Point, textBoxConfiguration : BoxConfiguration) {
         super()
@@ -197,23 +203,35 @@ export class TextLayer extends GameplayLayer {
         );
     }
 
-    get Text() : string {
-        return this.textBox.Text;
-    }
+    Say(text : string, name : string) : void {
+        this.textBox.Text = "";
+        this.fullText = text;
+        this.textAppeared = false;
 
-    set Text(text : string) {
-        this.textBox.Text = text;
-    }
-
-    set Name(name : string) {
         this.nameBox.Name = name;
     }
 
-    set NextWord(nextWord : string) {
-        this.textBox.NextWord = nextWord;
-    }
-
     Step(delta : number) : void {
+        this.textTime += delta;
+
+        if (this.textTime >= Config.TextSpeedRatio) {
+            if (this.textBox.Text.length < this.fullText.length) {
+                let c = this.fullText.slice(this.textBox.Text.length, this.textBox.Text.length + 1);
+                this.textBox.Text += c
+                if (c == " " && this.textBox.Text.length + 2 < this.fullText.length) {
+                    let n = this.textBox.Text.length;
+                    while (this.fullText[n] == " " && n < this.fullText.length) { ++n; }
+                    if (n < this.fullText.length) {
+                        while (this.fullText[n] != " " && n < this.fullText.length) { ++n; }
+                    }
+                    this.textBox.NextWord = this.fullText.slice(this.textBox.Text.length + 1, n);
+                }
+            } else {
+                this.textAppeared = true;
+            }
+
+            this.textTime = this.textTime - Config.TextSpeedRatio;
+        }
     }
 
     Draw(canvas : Canvas) : void {
@@ -222,6 +240,11 @@ export class TextLayer extends GameplayLayer {
     }
 
     Click(clickPosition : Point, action : Function) : void {
-        
+        if (this.textAppeared) {
+            action();
+        } else {
+            this.textBox.Text = this.fullText;
+            this.textAppeared = true;
+        }
     }
 }

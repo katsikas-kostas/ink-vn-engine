@@ -16,5 +16,5 @@ export abstract class GameplayLayer extends StepLayer {
 export * from "./background";
 export * from "./characters";
 export * from "./choicelayer";
-export * from "./textlayer";
+export * from "./speechlayer";
 export * from "./transition";
