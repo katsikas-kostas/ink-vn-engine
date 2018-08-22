@@ -8,11 +8,11 @@ export class Point {
     private y : number;
 
     constructor();
-    constructor(x : number)
+    constructor(x : number);
     constructor(x : number, y : number);
     constructor(x? : number, y? : number){
-        this.x = x || 0;
-        this.y = y || x || 0;
+        this.x = x != null ? x : 0;
+        this.y = y != null ? y : x != null ? x : 0;
     }
 
     get X() : number {
@@ -50,5 +50,9 @@ export class Point {
     IsInRect(rect : Rect) {
         return this.X >= rect.Position.X && this.X <= rect.Position.Add(rect.Size).X
             && this.Y >= rect.Position.Y && this.Y <= rect.Position.Add(rect.Size).Y;
+    }
+
+    Clone() : Point {
+        return new Point(this.X, this.Y);
     }
 }
