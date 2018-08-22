@@ -1,22 +1,29 @@
 declare module 'inkjs' {
+    export class Choice {
+        constructor()
+
+        index : number;
+        text : string
+    }
+
     export class Story {
         constructor(jsonString : string)
         constructor(jsonString : string, lists : [])
     
         canContinue : boolean
+        currentChoices : Choice[]
+        currentTags : string[]
         currentText : string
-        currentChoices : [Choice]
-        currentTags : [string]
+        globalTags : string[]
 
+        ChooseChoiceIndex(choiceIdx : number) : void
         Continue() : void
         ContinueMaximally() : void
-        ChooseChoiceIndex(choiceIdx : number) : void
     }
 
-    export class Choice {
-        constructor()
+    export class Tag {
+        constructor(tagText : string)
 
         text : string
-        index : number;
     }
 }
