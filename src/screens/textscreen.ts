@@ -67,6 +67,7 @@ class TextBox {
     }
 
     private doTheWrap(canvas : Canvas) : void {
+        canvas.DrawText0("", "transparent", this.fontSize);
         const comp = (line : string) => canvas.MeasureTextWidth(line) > this.innerSize.X;
 
         let lastLine = this.textLines[this.textLines.length - 1];
