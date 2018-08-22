@@ -15,6 +15,7 @@ declare module 'inkjs' {
         currentTags : string[]
         currentText : string
         globalTags : string[]
+        variablesState : VariablesState
 
         ChooseChoiceIndex(choiceIdx : number) : void
         Continue() : void
@@ -25,5 +26,9 @@ declare module 'inkjs' {
         constructor(tagText : string)
 
         text : string
+    }
+
+    export class VariablesState {
+        $(variableName : string, value? : any) : any
     }
 }

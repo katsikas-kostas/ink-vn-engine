@@ -120,6 +120,11 @@ export class VisualNovInk {
                     const key = match[1];
 
                     let value = match[2];
+                    const valueMatch = value.match(/^\{(\w+)\}$/);
+                    if (valueMatch != null) {
+                        value = this.story.variablesState.$(valueMatch[1]);
+                    }
+
                     switch (key) {
                         case "background": {
                             this.background.BackgroundImage = value;
