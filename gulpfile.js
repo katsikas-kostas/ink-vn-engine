@@ -14,7 +14,7 @@ function error(err) {
 function bundles(profile) {
     if (bundler == undefined) {
         var _browserify = browserify({
-            standalone: 'VisualNovInk',
+            standalone: 'InkVN',
             basedir: ".",
             debug: true,
             entries: ["src/main.ts"],
@@ -32,7 +32,7 @@ function bundle() {
     return bundler
         .bundle()
         .on("error", error)
-        .pipe(source("visualnov-ink.js"))
+        .pipe(source("ink-vn-engine.js"))
         .pipe(gulp.dest("dist"));
 }
 

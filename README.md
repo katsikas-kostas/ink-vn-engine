@@ -47,17 +47,17 @@ Or it can be used like this! # Paulloz
 
 ### Include everything in your HTML
 
-Just include the lib in your HTML file and create a new `VisualNovInk` object, giving it your ink file, an HTML element ID (a canvas is going to be created within it).
+Just include the lib in your HTML file and create a new `InkVN.VN` object, giving it your ink file, an HTML element ID (a canvas is going to be created within it).
 
 ```html
 <!DOCTYPE html>
 <html>
     <body>
         <div id="vn"></div>
-        <script src="visualnov-ink.js"></script>
+        <script src="ink-vn-engine.js"></script>
         <script type="text/javascript">
             window.onload = function() {
-                var vn = new VisualNovInk.VisualNovInk("story.json", "vn");
+                var vn = new InkVN.VN("story.json", "vn");
             };
         </script>
     </body>

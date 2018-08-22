@@ -8,7 +8,7 @@ import * as Layers from "./layers/layers";
 import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
 import { Config } from "./config";
 
-export class VisualNovInk {
+export class VN {
     story : InkJs.Story;
     canvas : Canvas;
 
