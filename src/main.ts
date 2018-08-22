@@ -56,11 +56,12 @@ export class VisualNovInk {
     private continue() : void {
         if (this.story.canContinue) {
             this.story.Continue();
-            this.computeTags();
+
             if (this.story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
                 this.changeState(State.TextAppearing);
+                this.computeTags();
                 (<TextScreen>this.currentScreen).Text = "";
                 (<TextScreen>this.currentScreen).Name = this.speakingCharacterName;
             }
