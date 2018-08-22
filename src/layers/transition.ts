@@ -1,10 +1,10 @@
 import { EventDispatcher, IEvent } from "strongly-typed-events";
 
-import { Screen } from "./screen";
+import { StepLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
-export class Transition extends Screen {
+export class Transition extends StepLayer {
     private time : number = 0;
     private totalTime : number = 2000.0;
 

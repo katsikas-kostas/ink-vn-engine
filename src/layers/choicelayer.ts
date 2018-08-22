@@ -1,5 +1,5 @@
 import { Choice } from "inkjs";
-import { ClickableScreen } from "./screen";
+import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point, Rect } from "../point";
 
@@ -55,7 +55,7 @@ class ChoiceBox {
     }
 }
 
-export class ChoiceScreen extends ClickableScreen {
+export class ChoiceLayer extends GameplayLayer {
     choices : Choice[] = []
 
     choiceBoxes : ChoiceBox[] = []
@@ -73,6 +73,9 @@ export class ChoiceScreen extends ClickableScreen {
             this.choiceBoxes.push(new ChoiceBox(_choice.index, _choice.text, new Point(640, y)));
             y += 100;
         }
+    }
+
+    Step(delta : number) : void {
     }
 
     Draw(canvas : Canvas) : void {

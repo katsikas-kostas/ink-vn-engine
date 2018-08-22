@@ -1,8 +1,8 @@
-import { Screen } from "./screen";
+import { Layer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
-class Character extends Screen {
+class Character extends Layer {
     private sprite : ImageBitmap;
     private spriteURL : string;
 
@@ -39,7 +39,7 @@ class Character extends Screen {
     }
 }
 
-export class Characters extends Screen {
+export class Characters extends Layer {
     private characters : Character[] = [];
 
     constructor() {

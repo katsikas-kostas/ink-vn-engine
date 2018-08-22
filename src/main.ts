@@ -1,17 +1,10 @@
 import * as InkJs from "inkjs";
+
 import { Canvas } from "./canvas";
 import { Point } from "./point";
-
 import { Preloader } from "./preloader";
 
-import { ClickableScreen } from "./screens/screen";
-import { TextScreen } from "./screens/textscreen";
-import { ChoiceScreen } from "./screens/choicescreen";
-
-import { Background } from "./screens/background";
-import { Characters } from "./screens/characters";
-
-import { Transition } from "./screens/transition";
+import * as Layers from "./layers/layers";
 
 enum State {
     Waiting,
@@ -30,14 +23,14 @@ export class VisualNovInk {
     private textSpeed : number = 30; // In char per second
     private textTime : number;
 
-    private background : Background;
-    private characters : Characters;
+    private background : Layers.Background;
+    private characters : Layers.Characters;
 
-    private currentScreen : ClickableScreen;
-    private textScreen : TextScreen;
-    private choiceScreen : ChoiceScreen;
+    private currentScreen : Layers.GameplayLayer;
+    private textScreen : Layers.TextLayer;
+    private choiceScreen : Layers.ChoiceLayer;
 
-    private transition : Transition;
+    private transition : Layers.Transition;
 
     private speakingCharacterName : string = "";
 
@@ -47,15 +40,15 @@ export class VisualNovInk {
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
 
-            this.background = new Background();
-            this.characters = new Characters();
+            this.background = new Layers.Background();
+            this.characters = new Layers.Characters();
 
-            this.textScreen = new TextScreen(this.canvas.Size, {
+            this.textScreen = new Layers.TextLayer(this.canvas.Size, {
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(15),
                 Height : 200
             });
-            this.choiceScreen = new ChoiceScreen();
+            this.choiceScreen = new Layers.ChoiceLayer();
 
             this.canvas.OnClick.subscribe(this.click.bind(this));
 
@@ -76,13 +69,13 @@ export class VisualNovInk {
             } else {
                 this.changeState(State.TextAppearing);
                 this.computeTags();
-                (<TextScreen>this.currentScreen).Text = "";
-                (<TextScreen>this.currentScreen).Name = this.speakingCharacterName;
+                (<Layers.TextLayer>this.currentScreen).Text = "";
+                (<Layers.TextLayer>this.currentScreen).Name = this.speakingCharacterName;
             }
         } else if (this.story.currentChoices.length > 0) {
             this.changeState(State.Choices);
             this.computeTags();
-            (<ChoiceScreen>this.currentScreen).Choices = this.story.currentChoices;
+            (<Layers.ChoiceLayer>this.currentScreen).Choices = this.story.currentChoices;
         } else {
         }
     }
@@ -101,24 +94,25 @@ export class VisualNovInk {
                     break;
                 }
                 case State.TextAppearing: {
+                    // TODO: Move this inside TextScreen and we can remove the whole state management from here.
                     this.textTime += delta;
 
                     if (this.textTime >= 1000.0 / this.textSpeed) {
-                        const text = (<TextScreen>this.currentScreen).Text;
+                        const text = (<Layers.TextLayer>this.currentScreen).Text;
                         const currentText = this.story.currentText;
                         if (text.length >= currentText.length) {
                             this.changeState(State.Waiting);
                             this.step(timestamp);
                         } else {
                             let c = currentText.slice(text.length, text.length + 1);
-                            (<TextScreen>this.currentScreen).Text += c
+                            (<Layers.TextLayer>this.currentScreen).Text += c
                             if (c == " " && text.length + 2 < currentText.length) {
                                 let n = text.length;
                                 while (currentText[n] == " " && n < currentText.length) { ++n; }
                                 if (n < currentText.length) {
                                     while (currentText[n] != " " && n < currentText.length) { ++n; }
                                 }
-                                (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
+                                (<Layers.TextLayer>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
         
                             }
                         }
@@ -184,7 +178,7 @@ export class VisualNovInk {
                             break;
                         }
                         case "transition": {
-                            this.transition = new Transition(this.canvas.GetImageData());
+                            this.transition = new Layers.Transition(this.canvas.GetImageData());
                             this.transition.OnEnd.subscribe((sender, args) => {
                                 this.transition = null;
 
@@ -209,7 +203,7 @@ export class VisualNovInk {
                 break;
             }
             case State.TextAppearing: {
-                (<TextScreen>this.currentScreen).Text = this.story.currentText;
+                (<Layers.TextLayer>this.currentScreen).Text = this.story.currentText;
                 this.changeState(State.Waiting);
                 break;
             }

@@ -1,7 +1,7 @@
-import { Screen } from "./screen";
+import { Layer } from "./layers";
 import { Canvas } from "../canvas";
 
-export class Background extends Screen {
+export class Background extends Layer {
     private backgroundImage : ImageBitmap;
     private backgroundImageURL : string;
 

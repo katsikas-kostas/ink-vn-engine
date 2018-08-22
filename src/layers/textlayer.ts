@@ -1,4 +1,4 @@
-import { ClickableScreen } from "./screen";
+import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
 
@@ -174,7 +174,7 @@ class NameBox {
     }
 }
 
-export class TextScreen extends ClickableScreen {
+export class TextLayer extends GameplayLayer {
     private textBox : TextBox;
     private nameBox : NameBox;
 
@@ -211,6 +211,9 @@ export class TextScreen extends ClickableScreen {
 
     set NextWord(nextWord : string) {
         this.textBox.NextWord = nextWord;
+    }
+
+    Step(delta : number) : void {
     }
 
     Draw(canvas : Canvas) : void {
