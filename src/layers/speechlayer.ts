@@ -1,13 +1,15 @@
 import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
-import { BoxBackground, NinePatchBoxBackground } from "./boxbackgrounds";
+import { BoxBackground, BoxBackgroundTypes, BoxBackgroundFactory } from "./boxbackgrounds";
 
 import { Config } from "../config";
 
 interface BoxConfiguration {
     FontSize : number
-    FontColor : string
+    FontColor : string,
+    BackgroundType : BoxBackgroundTypes,
+    Background : string
 }
 
 export interface SpeechBoxConfiguration extends BoxConfiguration {
@@ -43,8 +45,8 @@ class SpeechBox {
         this.innerMargin = configuration.InnerMargin;
         this.innerSize = this.size.Sub(this.innerMargin.Mult(new Point(2)));
 
-        this.boxBackground = new NinePatchBoxBackground(
-            "images/9patch.png",
+        this.boxBackground = BoxBackgroundFactory.Create(
+            configuration.BackgroundType, configuration.Background,
             this.size.Clone()
         );
 
@@ -151,17 +153,16 @@ class NameBox {
         this.fontSize = configuration.FontSize;
         this.fontColor = configuration.FontColor;
 
-        this.refreshBoxBackground();
+        this.boxBackground = BoxBackgroundFactory.Create(
+            configuration.BackgroundType, configuration.Background, 
+            this.size.Clone()
+        );
     }
 
     set Name(name : string) {
         if (name != this.name) {
             this.name = name;
         }
-    }
-
-    refreshBoxBackground() : void {
-        this.boxBackground = new NinePatchBoxBackground(this.backgroundURL, this.size.Clone());
     }
 
     Draw(canvas : Canvas) : void {
@@ -198,10 +199,12 @@ export class SpeechLayer extends GameplayLayer {
         this.nameBox = new NameBox(
             textBoxPosition.Add(new Point(70, 0)),
             {
-                Width: 100,
-                Height: 40,
-                FontSize: 24,
-                FontColor: "black"
+                Width : 100,
+                Height : 40,
+                FontSize : 24,
+                FontColor : "black",
+                BackgroundType : speechBoxConfiguration.BackgroundType,
+                Background : speechBoxConfiguration.Background
             }
         );
     }

@@ -2,6 +2,25 @@ import { Layer } from "./layers";
 import { Canvas, HiddenCanvas } from "../canvas";
 import { Point, Rect } from "../point";
 
+export enum BoxBackgroundTypes {
+    COLOR, NINEPATCH
+}
+
+class _BoxBackgroundFactory {
+    Create(type : BoxBackgroundTypes, background : string, size : Point, position? : Point) : BoxBackground {
+        switch (type) {
+            case BoxBackgroundTypes.COLOR: {
+                return new ColoredBoxBackground(background, size, position);
+            }
+            case BoxBackgroundTypes.NINEPATCH: {
+                return new NinePatchBoxBackground(background, size, position);
+            }
+        }
+    }
+}
+
+export const BoxBackgroundFactory : _BoxBackgroundFactory = new _BoxBackgroundFactory();
+
 export abstract class BoxBackground extends Layer {
     protected box : Rect
 
@@ -23,7 +42,7 @@ export abstract class BoxBackground extends Layer {
     }
 }
 
-export class ColoredBoxBackground extends BoxBackground {
+class ColoredBoxBackground extends BoxBackground {
     Color : string
 
     constructor(color : string, size : Point, position? : Point) {
@@ -37,7 +56,7 @@ export class ColoredBoxBackground extends BoxBackground {
     }
 }
 
-export class NinePatchBoxBackground extends BoxBackground {
+class NinePatchBoxBackground extends BoxBackground {
     private ninePatch : ImageBitmap;
     private ninePatchURL : string;
 

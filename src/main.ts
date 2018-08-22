@@ -5,6 +5,7 @@ import { Point } from "./point";
 import { Preloader } from "./preloader";
 
 import * as Layers from "./layers/layers";
+import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
 import { Config } from "./config";
 
 export class VisualNovInk {
@@ -39,8 +40,10 @@ export class VisualNovInk {
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(35),
                 Height : 200,
-                FontSize: 24,
-                FontColor: "white"
+                FontSize : 24,
+                FontColor : "white",
+                BackgroundType : BoxBackgroundTypes.NINEPATCH,
+                Background : "images/9patch.png"
             });
             this.choiceScreen = new Layers.ChoiceLayer();
 
