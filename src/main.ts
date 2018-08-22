@@ -1,10 +1,13 @@
 import * as InkJs from "inkjs";
 import { Canvas } from "./canvas";
 import { Point } from "./point";
+
 import { ClickableScreen } from "./screens/screen";
 import { TextScreen } from "./screens/textscreen";
 import { ChoiceScreen } from "./screens/choicescreen";
+
 import { Background } from "./screens/background";
+import { Characters } from "./screens/characters";
 
 enum State {
     Waiting,
@@ -24,6 +27,8 @@ export class VisualNovInk {
     private textTime : number;
 
     private background : Background;
+    private characters : Characters;
+
     private currentScreen : ClickableScreen;
     private textScreen : TextScreen;
     private choiceScreen : ChoiceScreen;
@@ -37,7 +42,8 @@ export class VisualNovInk {
             this.story = new InkJs.Story(rawStory);
 
             this.background = new Background();
-            
+            this.characters = new Characters();
+
             this.textScreen = new TextScreen(this.canvas.Size, {
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(15),
@@ -117,6 +123,7 @@ export class VisualNovInk {
         }
 
         this.background.Draw(this.canvas);
+        this.characters.Draw(this.canvas);
         this.currentScreen.Draw(this.canvas);
 
         this.requestStep();
@@ -145,7 +152,7 @@ export class VisualNovInk {
                             break;
                         }
                         case "sprite": {
-                            console.log(value);
+                            this.characters.Add(value, this.canvas);
                             break;
                         }
                         case "name": {

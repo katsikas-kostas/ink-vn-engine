@@ -60,6 +60,10 @@ export class Canvas {
         this.ctx.drawImage(image, 0, 0, this.element.width, this.element.height);
     }
 
+    DrawImage(image : ImageBitmap, position : Point) : void {
+        this.ctx.drawImage(image, position.X, position.Y, image.width, image.height);
+    }
+
     DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
         this.DrawText(text, new Point(), color, fontSize, maxWidth);
     }
