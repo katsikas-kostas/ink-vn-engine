@@ -19,8 +19,6 @@ export class VisualNovInk {
     private state : State;
 
     private textSpeed : number = 20; // In char per second
-    private currentAnimationRequest : number;
-    private currentTimeout : number;
 
     private background : Background;
     private currentScreen : ClickableScreen;
@@ -47,6 +45,7 @@ export class VisualNovInk {
             this.canvas.OnClick.subscribe(this.click.bind(this));
 
             this.continue();
+            this.requestStep();
         });
     }
 
@@ -57,22 +56,19 @@ export class VisualNovInk {
             if (this.story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
-                this.changeState(State.TextAppearing, () => {
-                    (<TextScreen>this.currentScreen).Text = "";
-                    (<TextScreen>this.currentScreen).Name = this.speakingCharacterName;
-                });
+                this.changeState(State.TextAppearing);
+                (<TextScreen>this.currentScreen).Text = "";
+                (<TextScreen>this.currentScreen).Name = this.speakingCharacterName;
             }
         } else if (this.story.currentChoices.length > 0) {
-            this.changeState(State.Choices, () => {
-                (<ChoiceScreen>this.currentScreen).Choices = this.story.currentChoices;
-            });
+            this.changeState(State.Choices);
+            this.computeTags();
+            (<ChoiceScreen>this.currentScreen).Choices = this.story.currentChoices;
         } else {
         }
     }
 
     private step(timestamp : number) : void {
-        this.currentAnimationRequest = null;
-        this.currentTimeout = null;
 
         this.canvas.Clear();
 
@@ -109,6 +105,8 @@ export class VisualNovInk {
 
         this.background.Draw(this.canvas);
         this.currentScreen.Draw(this.canvas);
+
+        this.requestStep();
     }
 
     private computeTags() : void {
@@ -147,14 +145,6 @@ export class VisualNovInk {
                 break;
             }
             case State.TextAppearing: {
-                // Skip apparition
-                if (this.currentAnimationRequest != null) {
-                    window.cancelAnimationFrame(this.currentAnimationRequest);
-                }
-                if (this.currentTimeout != null) {
-                    window.clearTimeout(this.currentTimeout);
-                    this.currentTimeout = null;
-                }
                 (<TextScreen>this.currentScreen).Text = this.story.currentText;
                 this.changeState(State.Waiting);
                 break;
@@ -171,7 +161,7 @@ export class VisualNovInk {
         this.continue();
     }
 
-    private changeState(newState : State, callback? : Function) : void {
+    private changeState(newState : State) : void {
         this.state = newState;
         switch (this.state) {
             case State.TextAppearing: {
@@ -183,11 +173,9 @@ export class VisualNovInk {
                 break;
             }
         }
-        (callback || function() { }).call(this);
-        this.requestStep();
     }
 
     private requestStep() : void {
-        this.currentAnimationRequest = window.requestAnimationFrame(this.step.bind(this));
+        window.requestAnimationFrame(this.step.bind(this));
     }
 }
