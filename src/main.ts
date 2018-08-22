@@ -18,7 +18,10 @@ export class VisualNovInk {
 
     private state : State;
 
-    private textSpeed : number = 20; // In char per second
+    private previousTimestamp : number;
+
+    private textSpeed : number = 30; // In char per second
+    private textTime : number;
 
     private background : Background;
     private currentScreen : ClickableScreen;
@@ -45,6 +48,7 @@ export class VisualNovInk {
             this.canvas.OnClick.subscribe(this.click.bind(this));
 
             this.continue();
+            this.previousTimestamp = 0;
             this.requestStep();
         });
     }
@@ -69,6 +73,8 @@ export class VisualNovInk {
     }
 
     private step(timestamp : number) : void {
+        const delta = timestamp - this.previousTimestamp;
+        this.previousTimestamp = timestamp;
 
         this.canvas.Clear();
 
@@ -77,25 +83,31 @@ export class VisualNovInk {
                 break;
             }
             case State.TextAppearing: {
-                const text = (<TextScreen>this.currentScreen).Text;
-                const currentText = this.story.currentText;
-                if (text.length >= currentText.length) {
-                    this.changeState(State.Waiting);
-                    this.step(timestamp);
-                } else {
-                    let c = currentText.slice(text.length, text.length + 1);
-                    (<TextScreen>this.currentScreen).Text += c
-                    if (c == " " && text.length + 2 < currentText.length) {
-                        let n = text.length;
-                        while (currentText[n] == " " && n < currentText.length) { ++n; }
-                        if (n < currentText.length) {
-                            while (currentText[n] != " " && n < currentText.length) { ++n; }
-                        }
-                        (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
+                this.textTime += delta;
 
+                if (this.textTime >= 1000.0 / this.textSpeed) {
+                    const text = (<TextScreen>this.currentScreen).Text;
+                    const currentText = this.story.currentText;
+                    if (text.length >= currentText.length) {
+                        this.changeState(State.Waiting);
+                        this.step(timestamp);
+                    } else {
+                        let c = currentText.slice(text.length, text.length + 1);
+                        (<TextScreen>this.currentScreen).Text += c
+                        if (c == " " && text.length + 2 < currentText.length) {
+                            let n = text.length;
+                            while (currentText[n] == " " && n < currentText.length) { ++n; }
+                            if (n < currentText.length) {
+                                while (currentText[n] != " " && n < currentText.length) { ++n; }
+                            }
+                            (<TextScreen>this.currentScreen).NextWord = currentText.slice(text.length + 1, n);
+    
+                        }
                     }
-                    this.currentTimeout = setTimeout(() => this.requestStep(), 1000 / this.textSpeed);
+
+                    this.textTime = this.textTime - (1000.0 / this.textSpeed);
                 }
+
                 break;
             }
             case State.Choices: {
@@ -166,6 +178,7 @@ export class VisualNovInk {
         switch (this.state) {
             case State.TextAppearing: {
                 this.currentScreen = this.textScreen;
+                this.textTime = 0;
                 break;
             }
             case State.Choices: {
