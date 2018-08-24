@@ -149,7 +149,11 @@ export class VN {
                             } else {
                                 this.Audio.StopBGM();
                             }
-                            break
+                            break;
+                        }
+                        case "sfx": {
+                            this.Audio.PlaySFX(value);
+                            break;
                         }
                         case "transition": {
                             this.transition = new Layers.Transition(this.Canvas.GetImageData());

@@ -1,4 +1,4 @@
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 
 export class Audio {
     private bgm : Howl
@@ -31,5 +31,10 @@ export class Audio {
             this.bgmURL = null;
             this.bgm = null;
         }
+    }
+
+    PlaySFX(sfxURL : string) : void {
+        const sfx = new Howl({ src : [sfxURL] });
+        sfx.once("load", () => sfx.play());
     }
 }

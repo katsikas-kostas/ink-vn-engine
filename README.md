@@ -35,6 +35,17 @@ Or it can be used like this! # Paulloz
 # sprite: 
 ```
 
+* Background music can be played or stopped
+```
+# bgm: path/to/your/music.[ogg|mp3|webm]
+# bgm: 
+```
+
+* Sound effects can be played
+```
+# sfx: path/to/your/sound/effect.[ogg|mp3|webm]
+```
+
 * Transitions can be played (fade is the only implemented one for now)
 ```
 # transition: fade
@@ -75,9 +86,6 @@ This is what is going to be implemented soon:
   * ~~9 patch~~ :heavy_check_mark:
 * Manage multiple sprites on screen
 * Highlight the speaking character's sprite
-* Manage audio
-  * ~~Music~~ :heavy_check_mark:
-  * SFX
 * Fading music
 * Animate sprite entries / exits
 * WebGL?

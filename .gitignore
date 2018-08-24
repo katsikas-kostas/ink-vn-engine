@@ -3,5 +3,5 @@ package-lock.json
 
 .vscode/
 
-dist/*
-!dist/.empty
+dist/
+example/
