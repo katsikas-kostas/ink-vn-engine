@@ -1,44 +1,47 @@
 import * as InkJs from "inkjs";
 
-import { Canvas } from "./canvas";
-import { Point } from "./point";
 import { Preloader } from "./preloader";
-
-import { Audio } from "./audio";
-import * as Layers from "./layers/layers";
-import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
 import { Config } from "./config";
 
+import { Point } from "./point";
+
+import { Audio } from "./audio";
+import { Canvas } from "./canvas";
+import * as Layers from "./layers/layers";
+import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
+
 export class VN {
-    story : InkJs.Story;
-    canvas : Canvas;
+    Story : InkJs.Story
+    Canvas : Canvas
+    Audio : Audio
 
-    private previousTimestamp : number;
+    private previousTimestamp : number
 
-    private background : Layers.Background;
-    private characters : Layers.Characters;
+    private background : Layers.Background
+    private characters : Layers.Characters
 
-    private currentScreen : Layers.GameplayLayer;
-    private speechScreen : Layers.SpeechLayer;
-    private choiceScreen : Layers.ChoiceLayer;
+    private currentScreen : Layers.GameplayLayer
+    private speechScreen : Layers.SpeechLayer
+    private choiceScreen : Layers.ChoiceLayer
 
-    private transition : Layers.Transition;
+    private transition : Layers.Transition
 
-    private speakingCharacterName : string = "";
+    private speakingCharacterName : string = ""
 
     constructor(story_filename : string, container_id : string) {
-        this.canvas = new Canvas(container_id, Config.ScreenSize);
         this.Audio = new Audio();
 
+        this.Canvas = new Canvas(container_id, Config.ScreenSize);
+
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
-            this.story = new InkJs.Story(rawStory);
-            Config.Load(this.story.globalTags);
-            this.canvas.Size = Config.ScreenSize;
+            this.Story = new InkJs.Story(rawStory);
+            Config.Load(this.Story.globalTags);
+            this.Canvas.Size = Config.ScreenSize;
 
             this.background = new Layers.Background();
             this.characters = new Layers.Characters();
 
-            this.speechScreen = new Layers.SpeechLayer(this.canvas.Size, {
+            this.speechScreen = new Layers.SpeechLayer(this.Canvas.Size, {
                 OuterMargin : new Point(50),
                 InnerMargin : new Point(35),
                 Height : 200,
@@ -49,7 +52,7 @@ export class VN {
             });
             this.choiceScreen = new Layers.ChoiceLayer();
 
-            this.canvas.OnClick.subscribe(this.click.bind(this));
+            this.Canvas.OnClick.subscribe(this.click.bind(this));
 
             this.continue();
             this.previousTimestamp = 0;
@@ -60,19 +63,19 @@ export class VN {
     private continue() : void {
         if (this.transition != null) { return; }
 
-        if (this.story.canContinue) {
-            this.story.Continue();
+        if (this.Story.canContinue) {
+            this.Story.Continue();
 
-            if (this.story.currentText.replace(/\s/g, "").length <= 0) {
+            if (this.Story.currentText.replace(/\s/g, "").length <= 0) {
                 this.continue();
             } else {
                 this.computeTags();
-                this.speechScreen.Say(this.story.currentText, this.speakingCharacterName);
+                this.speechScreen.Say(this.Story.currentText, this.speakingCharacterName);
                 this.currentScreen = this.speechScreen;
             }
-        } else if (this.story.currentChoices.length > 0) {
+        } else if (this.Story.currentChoices.length > 0) {
             this.computeTags();
-            this.choiceScreen.Choices = this.story.currentChoices;
+            this.choiceScreen.Choices = this.Story.currentChoices;
             this.currentScreen = this.choiceScreen;
         } else {
             // TODO It's the end
@@ -83,7 +86,7 @@ export class VN {
         const delta = timestamp - this.previousTimestamp;
         this.previousTimestamp = timestamp;
 
-        this.canvas.Clear();
+        this.Canvas.Clear();
 
         if (this.transition != null) {
             this.transition.Step(delta);
@@ -91,12 +94,12 @@ export class VN {
             this.currentScreen.Step(delta);
         }
 
-        this.background.Draw(this.canvas);
-        this.characters.Draw(this.canvas);
+        this.background.Draw(this.Canvas);
+        this.characters.Draw(this.Canvas);
         if (this.transition != null) {
-            this.transition.Draw(this.canvas);
+            this.transition.Draw(this.Canvas);
         } else {
-            this.currentScreen.Draw(this.canvas);
+            this.currentScreen.Draw(this.Canvas);
         }
 
         this.requestStep();
@@ -106,12 +109,12 @@ export class VN {
         const getFinalValue = (value : string) => {
             const valueMatch = value.match(/^\{(\w+)\}$/);
             if (valueMatch != null) {
-                return this.story.variablesState.$(valueMatch[1]);
+                return this.Story.variablesState.$(valueMatch[1]);
             }
             return value;
         };
 
-        const tags = this.story.currentTags;
+        const tags = this.Story.currentTags;
         if (tags.length > 0) {
             for (let i = 0; i < tags.length; ++i) {
                 const match = tags[i].match(/^(\w+)\s*:\s*(.*)$/);
@@ -130,7 +133,7 @@ export class VN {
                         }
                         case "sprite": {
                             if (value.length > 0) {
-                                this.characters.Add(value, this.canvas);
+                                this.characters.Add(value, this.Canvas);
                             } else {
                                 this.characters.Remove();
                             }
@@ -149,7 +152,7 @@ export class VN {
                             break
                         }
                         case "transition": {
-                            this.transition = new Layers.Transition(this.canvas.GetImageData());
+                            this.transition = new Layers.Transition(this.Canvas.GetImageData());
                             this.transition.OnEnd.subscribe((sender, args) => {
                                 this.transition = null;
 
@@ -178,7 +181,7 @@ export class VN {
     }
 
     private validateChoice(choiceIndex : number) : void {
-        this.story.ChooseChoiceIndex(choiceIndex);
+        this.Story.ChooseChoiceIndex(choiceIndex);
         this.continue();
     }
 
