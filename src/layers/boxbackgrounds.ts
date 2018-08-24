@@ -4,7 +4,7 @@ import { Point, Rect } from "../point";
 import { Loader } from "../loader";
 
 export enum BoxBackgroundTypes {
-    COLOR, NINEPATCH
+    COLOR, NINEPATCH, STRETCH
 }
 
 class _BoxBackgroundFactory {
@@ -15,6 +15,9 @@ class _BoxBackgroundFactory {
             }
             case BoxBackgroundTypes.NINEPATCH: {
                 return new NinePatchBoxBackground(background, size, position);
+            }
+            case BoxBackgroundTypes.STRETCH: {
+                return new StretchBoxBackground(background, size, position);
             }
         }
     }
@@ -111,6 +114,40 @@ class NinePatchBoxBackground extends BoxBackground {
     Draw(canvas : Canvas) : void {
         if (this.ninePatch != null) {
             canvas.DrawImage(this.ninePatch, this.box.Position);
+        }
+    }
+}
+
+class StretchBoxBackground extends BoxBackground {
+    private image : ImageBitmap;
+    private imageURL : string;
+    private imageSize : Point;
+
+    constructor(imageURL : string, size : Point, position : Point) {
+        super(size, position);
+
+        this.Image = imageURL;
+    }
+
+    set Image(imageURL : string) {
+        if (imageURL != this.imageURL) {
+            this.imageURL = imageURL;
+
+            Loader.LoadImage(imageURL)
+            .then(image => {
+                this.image = image;
+                this.imageSize = new Point(this.image.width, this.image.height)
+            });
+        }
+    }
+
+    Draw(canvas : Canvas) : void {
+        if (this.image != null) {
+            canvas.DrawImageTo(
+                this.image,
+                { Position : new Point(), Size : this.imageSize },
+                { Position : this.box.Position, Size : this.box.Size }
+            )
         }
     }
 }

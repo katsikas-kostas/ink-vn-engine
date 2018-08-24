@@ -42,8 +42,8 @@ export class VN {
                 Height : 200,
                 FontSize : 24,
                 FontColor : "white",
-                BackgroundType : BoxBackgroundTypes.NINEPATCH,
-                Background : "images/9patch.png"
+                BackgroundType : BoxBackgroundTypes.COLOR,
+                Background : "rgba(0.0, 0.0, 0.0, 0.75)"
             });
             this.choiceScreen = new Layers.ChoiceLayer();
 

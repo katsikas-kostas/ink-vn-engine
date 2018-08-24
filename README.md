@@ -70,7 +70,7 @@ This is what is going to be implemented soon:
 
 * Better choice placements
 * Use pictures as text backgrounds
-  * simple picture
+  * ~~simple picture~~ :heavy_check_mark:
   * repeating pattern
   * ~~9 patch~~ :heavy_check_mark:
 * Manage multiple sprites on screen
