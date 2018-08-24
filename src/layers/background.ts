@@ -1,5 +1,6 @@
 import { Layer } from "./layers";
 import { Canvas } from "../canvas";
+import { Loader } from "../loader";
 
 export class Background extends Layer {
     private backgroundImage : ImageBitmap;
@@ -17,8 +18,8 @@ export class Background extends Layer {
     set BackgroundImage(imageURL : string) {
         if (imageURL != this.backgroundImageURL) {
             this.backgroundImageURL = imageURL;
-            fetch(imageURL).then(response => response.blob()).then(blobData => {
-                createImageBitmap(blobData).then(image => this.backgroundImage = image);
+            Loader.LoadImage(imageURL).then(image => {
+                this.backgroundImage = image
             });
         }
     }

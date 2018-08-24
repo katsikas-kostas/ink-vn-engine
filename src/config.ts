@@ -1,7 +1,5 @@
 import { Point } from "./point";
 
-
-
 class _Config {
     DefaultTextSpeed : number = 30;
     private textSpeed : number

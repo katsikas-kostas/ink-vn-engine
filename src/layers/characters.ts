@@ -1,6 +1,7 @@
 import { Layer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
+import { Loader } from "../loader";
 
 class Character extends Layer {
     private sprite : ImageBitmap;
@@ -19,9 +20,7 @@ class Character extends Layer {
     set Sprite(spriteURL : string) {
         if (spriteURL != this.spriteURL) {
             this.spriteURL = spriteURL;
-            fetch(spriteURL).then(response => response.blob()).then(blobData => {
-                createImageBitmap(blobData).then(image => this.sprite = image);
-            });
+            Loader.LoadImage(spriteURL).then(image => this.sprite = image);
         }
     }
 
