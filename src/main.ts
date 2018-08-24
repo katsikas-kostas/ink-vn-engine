@@ -4,6 +4,7 @@ import { Canvas } from "./canvas";
 import { Point } from "./point";
 import { Preloader } from "./preloader";
 
+import { Audio } from "./audio";
 import * as Layers from "./layers/layers";
 import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
 import { Config } from "./config";
@@ -27,6 +28,7 @@ export class VN {
 
     constructor(story_filename : string, container_id : string) {
         this.canvas = new Canvas(container_id, Config.ScreenSize);
+        this.Audio = new Audio();
 
         fetch(story_filename).then((response) => response.text()).then((rawStory) => {
             this.story = new InkJs.Story(rawStory);
@@ -137,6 +139,14 @@ export class VN {
                         case "name": {
                             this.speakingCharacterName = value;
                             break;
+                        }
+                        case "bgm": {
+                            if (value.length > 0) {
+                                this.Audio.PlayBGM(value);
+                            } else {
+                                this.Audio.StopBGM();
+                            }
+                            break
                         }
                         case "transition": {
                             this.transition = new Layers.Transition(this.canvas.GetImageData());

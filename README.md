@@ -76,8 +76,9 @@ This is what is going to be implemented soon:
 * Manage multiple sprites on screen
 * Highlight the speaking character's sprite
 * Manage audio
-  * Music
+  * ~~Music~~ :heavy_check_mark:
   * SFX
+* Fading music
 * Animate sprite entries / exits
 * WebGL?
 
