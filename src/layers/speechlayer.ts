@@ -220,7 +220,7 @@ export class SpeechLayer extends GameplayLayer {
     Step(delta : number) : void {
         this.textTime += delta;
 
-        if (this.textTime >= Config.TextSpeedRatio) {
+        while (this.textTime >= Config.TextSpeedRatio) {
             if (this.textBox.Text.length < this.fullText.length) {
                 let c = this.fullText.slice(this.textBox.Text.length, this.textBox.Text.length + 1);
                 this.textBox.Text += c
