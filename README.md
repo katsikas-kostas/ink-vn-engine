@@ -79,7 +79,6 @@ Just include the lib in your HTML file and create a new `InkVN.VN` object, givin
 
 This is what is going to be implemented soon:
 
-* Better choice placements
 * Use pictures as text backgrounds
   * ~~simple picture~~ :heavy_check_mark:
   * repeating pattern

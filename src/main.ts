@@ -50,7 +50,7 @@ export class VN {
                 BackgroundType : BoxBackgroundTypes.COLOR,
                 Background : "rgba(0.0, 0.0, 0.0, 0.75)"
             });
-            this.choiceScreen = new Layers.ChoiceLayer();
+            this.choiceScreen = new Layers.ChoiceLayer(this.Canvas.Size);
 
             this.Canvas.OnClick.subscribe(this.click.bind(this));
 

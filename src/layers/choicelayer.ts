@@ -4,22 +4,23 @@ import { Canvas } from "../canvas";
 import { Point, Rect } from "../point";
 
 class ChoiceBox {
-    private id : number;
-    private text : string;
+    private id : number
+    private text : string
 
-    private position : Point;
+    private position : Point
 
-    private fontSize : number = 24;
-    private innerMargin : Point = new Point(20);
-    private size : Point;
+    private fontSize : number = 24
+    private innerMargin : Point = new Point(0, 20)
+    private size : Point
 
-    private hasAlreadyBeenDrawnOnce : boolean = false;
+    private hasAlreadyBeenDrawnOnce : boolean = false
 
-    constructor(id : number, text : string, centerPosition : Point) {
+    constructor(id : number, text : string, width : number, position : Point) {
         this.id = id;
         this.text = text;
 
-        this.position = centerPosition;
+        this.size = new Point(width, (this.fontSize * 1.42857) + (2 * this.innerMargin.Y));
+        this.position = position;
     }
 
     get Id() : number {
@@ -33,14 +34,9 @@ class ChoiceBox {
         };
     }
 
-    private beforeFirstDraw(canvas: Canvas) : void {
+    private beforeFirstDraw(canvas : Canvas) : void {
         canvas.DrawText0("", "transparent", this.fontSize);
-        this.size = new Point(
-            canvas.MeasureTextWidth(this.text) + (2 * this.innerMargin.X),
-            (this.fontSize * 1.42857) + (2 * this.innerMargin.Y)
-        );
-        this.position = this.position.Sub(this.size.Div(new Point(2)));
-        this.hasAlreadyBeenDrawnOnce = true;
+        this.innerMargin.X = (this.size.X - canvas.MeasureTextWidth(this.text)) / 2;
     }
 
     Draw(canvas : Canvas) : void {
@@ -48,45 +44,57 @@ class ChoiceBox {
             this.beforeFirstDraw(canvas);
         }
 
-        canvas.Translate(this.position);
-        canvas.DrawRect0(this.size, "black");
-        canvas.DrawText(this.text, this.innerMargin, "white", this.fontSize, this.size.X);
-        canvas.Restore();
+        canvas.DrawRect(this.position, this.size, "black");
+        canvas.DrawText(this.text, this.position.Add(this.innerMargin), "white", this.fontSize, this.size.X);
     }
 }
 
 export class ChoiceLayer extends GameplayLayer {
+    screenSize : Point
+    translation : Point
+    boundingRect : Point
+
     choices : Choice[] = []
 
     choiceBoxes : ChoiceBox[] = []
 
-    constructor() {
+    constructor(screenSize : Point) {
         super();
+
+        this.screenSize = screenSize;
     }
 
     set Choices(choices : Choice[]) {
         this.choices = choices;
 
         this.choiceBoxes = [];
-        let y : number = 100;
+        const width = 200;
+        const position = new Point(0, 0);
         for (const _choice of this.choices) {
-            this.choiceBoxes.push(new ChoiceBox(_choice.index, _choice.text, new Point(640, y)));
-            y += 100;
+            const newChoice = new ChoiceBox(_choice.index, _choice.text, width, position.Clone());
+            this.choiceBoxes.push(newChoice);
+            position.Y += newChoice.BoundingRect.Size.Y + 40;
         }
+        this.boundingRect = new Point(width, position.Y - 40);
+        this.translation = this.screenSize.Div(new Point(2)).Sub(this.boundingRect.Div(new Point(2)));
     }
 
     Step(delta : number) : void {
     }
 
     Draw(canvas : Canvas) : void {
+        canvas.Translate(this.translation);
         for (const choiceBox of this.choiceBoxes) {
             choiceBox.Draw(canvas);
         }
+        canvas.Restore();
     }
 
     Click(clickPosition : Point, action : Function) : void {
         for (const choiceBox of this.choiceBoxes) {
-            if (clickPosition.IsInRect(choiceBox.BoundingRect)) {
+            const boundingRect = choiceBox.BoundingRect;
+            boundingRect.Position = boundingRect.Position.Add(this.translation);
+            if (clickPosition.IsInRect(boundingRect)) {
                 action(choiceBox.Id);
                 break;
             }
