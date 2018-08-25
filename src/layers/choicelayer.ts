@@ -2,6 +2,7 @@ import { Choice } from "inkjs";
 import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point, Rect } from "../point";
+import { BoxBackgroundFactory, BoxBackgroundTypes, BoxBackground } from "./boxbackgrounds"; 
 
 class ChoiceBox {
     private id : number
@@ -13,6 +14,8 @@ class ChoiceBox {
     private innerMargin : Point = new Point(0, 20)
     private size : Point
 
+    private boxBackground : BoxBackground
+
     private hasAlreadyBeenDrawnOnce : boolean = false
 
     constructor(id : number, text : string, width : number, position : Point) {
@@ -21,6 +24,8 @@ class ChoiceBox {
 
         this.size = new Point(width, (this.fontSize * 1.42857) + (2 * this.innerMargin.Y));
         this.position = position;
+
+        this.boxBackground = BoxBackgroundFactory.Create(BoxBackgroundTypes.COLOR, "rgba(0, 0, 0, .7)", this.size, this.position);
     }
 
     get Id() : number {
@@ -44,7 +49,7 @@ class ChoiceBox {
             this.beforeFirstDraw(canvas);
         }
 
-        canvas.DrawRect(this.position, this.size, "black");
+        this.boxBackground.Draw(canvas);
         canvas.DrawText(this.text, this.position.Add(this.innerMargin), "white", this.fontSize, this.size.X);
     }
 }
