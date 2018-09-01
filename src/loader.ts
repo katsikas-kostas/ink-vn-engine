@@ -12,7 +12,7 @@ class ClassLoader {
                 worker.terminate();
             });
 
-            worker.postMessage(`${document.location.href}${URL}`);
+            worker.postMessage(`${window.location.href.replace(/[^\\\/]*$/, "")}${URL}`);
         });
     }
 
