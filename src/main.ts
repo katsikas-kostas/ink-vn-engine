@@ -1,5 +1,5 @@
 import * as InkJs from "inkjs";
-import { Audio } from "./audio";
+import { Audio, AudioFactory } from "./audio";
 import { Canvas } from "./canvas";
 import { Config } from "./config";
 import { BoxBackgroundTypes } from "./layers/boxbackgrounds";
@@ -22,7 +22,7 @@ export class VN {
     private transition : Layers.Transition;
 
     constructor(storyFilename : string, containerID : string) {
-        this.Audio = new Audio();
+        this.Audio = AudioFactory.Create();
 
         this.Canvas = new Canvas(containerID, Config.ScreenSize);
 

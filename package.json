@@ -11,7 +11,9 @@
     "lib": "./lib"
   },
   "dependencies": {
-    "inkjs": "^1.7.1",
+    "inkjs": "^1.7.1"
+  },
+  "optionalDependencies": {
     "pizzicato": "^0.6.3"
   },
   "devDependencies": {

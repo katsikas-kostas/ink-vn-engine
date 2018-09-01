@@ -1,6 +1,22 @@
 import * as Pizzicato from "pizzicato";
 
-export class Audio {
+export class AudioFactory {
+    static Create() : Audio {
+        if (Pizzicato != null) {
+            return new PizzicatoAudio();
+        } else {
+            return new DummyAudio();
+        }
+    }
+}
+
+export abstract class Audio {
+    abstract PlayBGM(bgmURL : string) : void;
+    abstract PlaySFX(sfxURL : string) : void;
+    abstract StopBGM() : void;
+}
+
+class PizzicatoAudio extends Audio {
     private bgm : Pizzicato.Sound;
     private bgmURL : string;
 
@@ -40,4 +56,10 @@ export class Audio {
             this.bgm = null;
         }
     }
+}
+
+class DummyAudio extends Audio {
+    PlayBGM(bgmURL : string) : void { }
+    PlaySFX(sfxURL : string) : void { }
+    StopBGM() : void { }
 }
