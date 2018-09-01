@@ -20,9 +20,10 @@ function bundles(profile) {
             debug: true,
             entries: ["src/main.ts"],
             cache: {},
-            packageCache: {}
-        }).plugin(tsify);
-    
+            packageCache: {},
+            transform: ["browserify-shim"]
+        }).plugin(tsify).external(["inkjs", "pizzicato"]);
+
         bundler = (profile === "watch") ? watchify(_browserify) : _browserify;
     }
 
