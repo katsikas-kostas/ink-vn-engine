@@ -1,7 +1,7 @@
-class _Preloader {
+class ClassPreloader {
     Preload(url : string) : void {
         fetch(url);
     }
 }
 
-export const Preloader = new _Preloader();
+export const Preloader = new ClassPreloader();

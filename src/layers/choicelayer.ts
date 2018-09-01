@@ -1,22 +1,18 @@
 import { Choice } from "inkjs";
-import { GameplayLayer } from "./layers";
 import { Canvas } from "../canvas";
-import { Point, Rect } from "../point";
-import { BoxBackgroundFactory, BoxBackgroundTypes, BoxBackground } from "./boxbackgrounds"; 
+import { IRect, Point } from "../point";
+import { BoxBackground, BoxBackgroundFactory, BoxBackgroundTypes } from "./boxbackgrounds";
+import { GameplayLayer } from "./layers";
 
 class ChoiceBox {
-    private id : number
-    private text : string
-
-    private position : Point
-
-    private fontSize : number = 24
-    private innerMargin : Point = new Point(0, 20)
-    private size : Point
-
-    private boxBackground : BoxBackground
-
-    private hasAlreadyBeenDrawnOnce : boolean = false
+    private boxBackground : BoxBackground;
+    private fontSize : number = 24;
+    private hasAlreadyBeenDrawnOnce : boolean = false;
+    private id : number;
+    private innerMargin : Point = new Point(0, 20);
+    private position : Point;
+    private size : Point;
+    private text : string;
 
     constructor(id : number, text : string, width : number, position : Point) {
         this.id = id;
@@ -32,16 +28,11 @@ class ChoiceBox {
         return this.id;
     }
 
-    get BoundingRect() : Rect {
+    get BoundingRect() : IRect {
         return {
             Position : this.position,
             Size : this.size
         };
-    }
-
-    private beforeFirstDraw(canvas : Canvas) : void {
-        canvas.DrawText0("", "transparent", this.fontSize);
-        this.innerMargin.X = (this.size.X - canvas.MeasureTextWidth(this.text)) / 2;
     }
 
     Draw(canvas : Canvas) : void {
@@ -52,16 +43,19 @@ class ChoiceBox {
         this.boxBackground.Draw(canvas);
         canvas.DrawText(this.text, this.position.Add(this.innerMargin), "white", this.fontSize, this.size.X);
     }
+
+    private beforeFirstDraw(canvas : Canvas) : void {
+        canvas.DrawText0("", "transparent", this.fontSize);
+        this.innerMargin.X = (this.size.X - canvas.MeasureTextWidth(this.text)) / 2;
+    }
 }
 
 export class ChoiceLayer extends GameplayLayer {
-    screenSize : Point
-    translation : Point
-    boundingRect : Point
-
-    choices : Choice[] = []
-
-    choiceBoxes : ChoiceBox[] = []
+    boundingRect : Point;
+    choiceBoxes : ChoiceBox[] = [];
+    choices : Choice[] = [];
+    screenSize : Point;
+    translation : Point;
 
     constructor(screenSize : Point) {
         super();
@@ -84,17 +78,6 @@ export class ChoiceLayer extends GameplayLayer {
         this.translation = this.screenSize.Div(new Point(2)).Sub(this.boundingRect.Div(new Point(2)));
     }
 
-    Step(delta : number) : void {
-    }
-
-    Draw(canvas : Canvas) : void {
-        canvas.Translate(this.translation);
-        for (const choiceBox of this.choiceBoxes) {
-            choiceBox.Draw(canvas);
-        }
-        canvas.Restore();
-    }
-
     Click(clickPosition : Point, action : Function) : void {
         for (const choiceBox of this.choiceBoxes) {
             const boundingRect = choiceBox.BoundingRect;
@@ -105,4 +88,14 @@ export class ChoiceLayer extends GameplayLayer {
             }
         }
     }
+
+    Draw(canvas : Canvas) : void {
+        canvas.Translate(this.translation);
+        for (const choiceBox of this.choiceBoxes) {
+            choiceBox.Draw(canvas);
+        }
+        canvas.Restore();
+    }
+
+    Step(delta : number) : void { }
 }

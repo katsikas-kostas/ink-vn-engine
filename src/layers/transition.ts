@@ -1,8 +1,7 @@
 import { EventDispatcher, IEvent } from "strongly-typed-events";
-
-import { StepLayer } from "./layers";
 import { Canvas } from "../canvas";
 import { Point } from "../point";
+import { StepLayer } from "./layers";
 
 export class Transition extends StepLayer {
     private time : number = 0;

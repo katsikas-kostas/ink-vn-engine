@@ -1,6 +1,6 @@
-export interface Rect {
-    Position : Point,
-    Size : Point
+export interface IRect {
+    Position : Point;
+    Size : Point;
 }
 
 export class Point {
@@ -10,7 +10,7 @@ export class Point {
     constructor();
     constructor(x : number);
     constructor(x : number, y : number);
-    constructor(x? : number, y? : number){
+    constructor(x? : number, y? : number) {
         this.x = x != null ? x : 0;
         this.y = y != null ? y : x != null ? x : 0;
     }
@@ -35,24 +35,24 @@ export class Point {
         return new Point(this.X + point.X, this.Y + point.Y);
     }
 
-    Sub(point : Point) : Point {
-        return this.Add(new Point(-point.X, -point.Y));
-    }
-
-    Mult(point : Point) : Point {
-        return new Point(this.X * point.X, this.Y * point.Y);
+    Clone() : Point {
+        return new Point(this.X, this.Y);
     }
 
     Div(point : Point) : Point {
         return new Point(this.X / point.X, this.Y / point.Y);
     }
 
-    IsInRect(rect : Rect) {
+    IsInRect(rect : IRect) {
         return this.X >= rect.Position.X && this.X <= rect.Position.Add(rect.Size).X
             && this.Y >= rect.Position.Y && this.Y <= rect.Position.Add(rect.Size).Y;
     }
 
-    Clone() : Point {
-        return new Point(this.X, this.Y);
+    Mult(point : Point) : Point {
+        return new Point(this.X * point.X, this.Y * point.Y);
+    }
+
+    Sub(point : Point) : Point {
+        return this.Add(new Point(-point.X, -point.Y));
     }
 }

@@ -1,14 +1,13 @@
-import { Layer } from "./layers";
 import { Canvas } from "../canvas";
-import { Point } from "../point";
 import { Loader } from "../loader";
+import { Point } from "../point";
+import { Layer } from "./layers";
 
 class Character extends Layer {
-    private sprite : ImageBitmap;
-    private spriteURL : string;
-
     private centerPosX : number;
     private position : Point;
+    private sprite : ImageBitmap;
+    private spriteURL : string;
 
     constructor(spriteURL : string, posX : number) {
         super();
@@ -18,7 +17,7 @@ class Character extends Layer {
     }
 
     set Sprite(spriteURL : string) {
-        if (spriteURL != this.spriteURL) {
+        if (spriteURL !== this.spriteURL) {
             this.spriteURL = spriteURL;
             Loader.LoadImage(spriteURL).then(image => this.sprite = image);
         }
@@ -51,16 +50,16 @@ export class Characters extends Layer {
             this.characters = [];
         }
 
-        this.characters.push(new Character(spriteURL, canvas.Size.X / 2))
-    }
-
-    Remove() {
-        this.characters = [];
+        this.characters.push(new Character(spriteURL, canvas.Size.X / 2));
     }
 
     Draw(canvas : Canvas) : void {
         for (const character of this.characters) {
             character.Draw(canvas);
         }
+    }
+
+    Remove() {
+        this.characters = [];
     }
 }

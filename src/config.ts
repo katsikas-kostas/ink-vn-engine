@@ -1,11 +1,11 @@
 import { Point } from "./point";
 
-class _Config {
+class ClassConfig {
     DefaultTextSpeed : number = 30;
-    private textSpeed : number
-    private textSpeedRatio : number;
-
     ScreenSize : Point = new Point(800, 600);
+
+    private textSpeed : number;
+    private textSpeedRatio : number;
 
     constructor() {
         this.TextSpeed = this.DefaultTextSpeed; // This is in char per second
@@ -32,8 +32,8 @@ class _Config {
                 switch (key) {
                     case "screen_size":
                     case "screensize": {
-                        const size = value.split(/\D+/).map((x) => parseInt(x));
-                        if (size.length == 2 && !isNaN(size[0]) && !isNaN(size[1])) {
+                        const size = value.split(/\D+/).map(x => parseInt(x, 10));
+                        if (size.length === 2 && !isNaN(size[0]) && !isNaN(size[1])) {
                             this.ScreenSize = new Point(size[0], size[1]);
                         } else {
                             throw new TypeError();
@@ -42,10 +42,9 @@ class _Config {
                     }
                     case "text_speed":
                     case "textspeed": {
-                        const speed = parseInt(value);
+                        const speed = parseInt(value, 10);
                         if (!isNaN(speed)) {
                             this.DefaultTextSpeed = this.TextSpeed = speed;
-                            console.log(this.textSpeed);
                         } else {
                             throw new TypeError();
                         }
@@ -64,14 +63,14 @@ class _Config {
         return this.textSpeed;
     }
 
-    get TextSpeedRatio() : number {
-        return this.textSpeedRatio;
-    }
-
     set TextSpeed(value : number) {
         this.textSpeed = value;
         this.textSpeedRatio = 1000.0 / this.textSpeed;
     }
+
+    get TextSpeedRatio() : number {
+        return this.textSpeedRatio;
+    }
 }
 
-export let Config = new _Config();
+export let Config = new ClassConfig();

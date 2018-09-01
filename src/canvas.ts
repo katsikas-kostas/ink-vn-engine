@@ -1,18 +1,17 @@
 import { EventDispatcher, IEvent } from "strongly-typed-events";
 
-import { Point, Rect } from "./point";
+import { IRect, Point } from "./point";
 
 export class Canvas {
-    private element : HTMLCanvasElement;
-    private ctx : CanvasRenderingContext2D;
-
     private _onClick : EventDispatcher<Canvas, Point> = new EventDispatcher<Canvas, Point>();
+    private ctx : CanvasRenderingContext2D;
+    private element : HTMLCanvasElement;
 
-    constructor(container_id : string, size : Point) {
-        const container = document.getElementById(container_id);
+    constructor(containerID : string, size : Point) {
+        const container = document.getElementById(containerID);
 
-        if (container.tagName == "canvas") {
-            this.element = <HTMLCanvasElement> container;
+        if (container.tagName === "canvas") {
+            this.element = container as HTMLCanvasElement;
         } else {
             this.element = document.createElement("canvas");
             container.appendChild(this.element);
@@ -43,29 +42,6 @@ export class Canvas {
         this.ctx.clearRect(0, 0, this.element.width, this.element.height);
     }
 
-    GetImageData() : ImageData {
-        return this.ctx.getImageData(0, 0, this.Size.X, this.Size.Y);
-    }
-
-    Translate(position : Point) : void {
-        this.Restore();
-        this.ctx.save();
-        this.ctx.translate(position.X, position.Y);
-    }
-
-    Restore() : void {
-        this.ctx.restore();
-    }
-
-    DrawRect0(size : Point, color : string) : void {
-        this.DrawRect(new Point(), size, color);
-    }
-
-    DrawRect(position : Point, size : Point, color : string) : void {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(position.X, position.Y, size.X, size.Y);
-    }
-
     DrawBackgroundImage(image : ImageBitmap) : void {
         this.ctx.drawImage(image, 0, 0, this.element.width, this.element.height);
     }
@@ -74,7 +50,7 @@ export class Canvas {
         this.ctx.drawImage(image, position.X, position.Y, image.width, image.height);
     }
 
-    DrawImageTo(image : ImageBitmap, source : Rect, destination : Rect) {
+    DrawImageTo(image : ImageBitmap, source : IRect, destination : IRect) {
         this.ctx.drawImage(
             image,
             source.Position.X, source.Position.Y,
@@ -84,8 +60,13 @@ export class Canvas {
         );
     }
 
-    DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
-        this.DrawText(text, new Point(), color, fontSize, maxWidth);
+    DrawRect(position : Point, size : Point, color : string) : void {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(position.X, position.Y, size.X, size.Y);
+    }
+
+    DrawRect0(size : Point, color : string) : void {
+        this.DrawRect(new Point(), size, color);
     }
 
     DrawText(text : string, position : Point, color : string, fontSize : number, maxWidth? : number) : void {
@@ -95,9 +76,27 @@ export class Canvas {
         this.ctx.fillText(text, position.X, position.Y, maxWidth);
     }
 
+    DrawText0(text : string, color : string, fontSize : number, maxWidth? : number) : void {
+        this.DrawText(text, new Point(), color, fontSize, maxWidth);
+    }
+
+    GetImageData() : ImageData {
+        return this.ctx.getImageData(0, 0, this.Size.X, this.Size.Y);
+    }
+
     MeasureTextWidth(text : string) : number {
         // We measure with the last font used in the context
         return this.ctx.measureText(text).width;
+    }
+
+    Restore() : void {
+        this.ctx.restore();
+    }
+
+    Translate(position : Point) : void {
+        this.Restore();
+        this.ctx.save();
+        this.ctx.translate(position.X, position.Y);
     }
 
     get OnClick() : IEvent<Canvas, Point> {
@@ -105,7 +104,7 @@ export class Canvas {
     }
 
     private _click(ev : MouseEvent) : void {
-        let clickPosition : Point = new Point(
+        const clickPosition : Point = new Point(
             ev.pageX - this.element.offsetLeft,
             ev.pageY - this.element.offsetTop
         );
@@ -114,7 +113,7 @@ export class Canvas {
 }
 
 export class HiddenCanvas extends Canvas {
-    private hiddenElement : HTMLElement
+    private hiddenElement : HTMLElement;
 
     constructor(size : Point) {
         const id = `c_${Math.random().toString().slice(2, 7)}`;

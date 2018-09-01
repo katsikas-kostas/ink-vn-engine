@@ -1,14 +1,14 @@
 import { Howl } from "howler";
 
 export class Audio {
-    private bgm : Howl
+    private bgm : Howl;
     private bgmURL : string;
 
     constructor() {
     }
 
     PlayBGM(bgmURL : string) : void {
-        if (bgmURL != this.bgmURL) {
+        if (bgmURL !== this.bgmURL) {
             this.bgmURL = bgmURL;
 
             const bgm = new Howl({ src : [bgmURL] });

@@ -1,13 +1,13 @@
-import { Layer } from "./layers";
 import { Canvas, HiddenCanvas } from "../canvas";
-import { Point, Rect } from "../point";
 import { Loader } from "../loader";
+import { IRect, Point } from "../point";
+import { Layer } from "./layers";
 
 export enum BoxBackgroundTypes {
     COLOR, NINEPATCH, STRETCH
 }
 
-class _BoxBackgroundFactory {
+class ClassBoxBackgroundFactory {
     Create(type : BoxBackgroundTypes, background : string, size : Point, position? : Point) : BoxBackground {
         switch (type) {
             case BoxBackgroundTypes.COLOR: {
@@ -23,10 +23,10 @@ class _BoxBackgroundFactory {
     }
 }
 
-export const BoxBackgroundFactory : _BoxBackgroundFactory = new _BoxBackgroundFactory();
+export const BoxBackgroundFactory : ClassBoxBackgroundFactory = new ClassBoxBackgroundFactory();
 
 export abstract class BoxBackground extends Layer {
-    protected box : Rect
+    protected box : IRect;
 
     constructor(size : Point, position? : Point) {
         super();
@@ -38,7 +38,7 @@ export abstract class BoxBackground extends Layer {
     }
 
     set Position(position : Point) {
-        this.box.Position = position
+        this.box.Position = position;
     }
 
     set Size(size : Point) {
@@ -47,7 +47,7 @@ export abstract class BoxBackground extends Layer {
 }
 
 class ColoredBoxBackground extends BoxBackground {
-    Color : string
+    Color : string;
 
     constructor(color : string, size : Point, position? : Point) {
         super(size, position);
@@ -71,7 +71,7 @@ class NinePatchBoxBackground extends BoxBackground {
     }
 
     set NinePatch(ninePatchURL : string) {
-        if (ninePatchURL != this.ninePatchURL) {
+        if (ninePatchURL !== this.ninePatchURL) {
             this.ninePatchURL = ninePatchURL;
 
             Loader.LoadImage(ninePatchURL)
@@ -96,14 +96,19 @@ class NinePatchBoxBackground extends BoxBackground {
                 drawPatchTo(patchSize.Mult(new Point(0, 2)), patchDestinations[2]); // Lower Left
                 drawPatchTo(patchSize.Mult(new Point(2, 2)), patchDestinations[3]); // Lower Right
 
-                drawPatchTo(patchSize.Mult(new Point(1, 0)), patchSize.Mult(new Point(1, 0)), new Point(this.box.Size.X - (patchSize.X * 2), patchSize.Y)); // Top
-                drawPatchTo(patchSize.Mult(new Point(2, 1)), patchDestinations[1].Add(new Point(0, patchSize.Y)), new Point(patchSize.X, this.box.Size.Y - (patchSize.Y * 2))); // Right
-                drawPatchTo(patchSize.Mult(new Point(1, 2)), patchDestinations[2].Add(new Point(patchSize.X, 0)), new Point(this.box.Size.X - (patchSize.X * 2), patchSize.Y)); // Bottom
-                drawPatchTo(patchSize.Mult(new Point(0, 1)), patchSize.Mult(new Point(0, 1)), new Point(patchSize.X, this.box.Size.Y - (patchSize.Y * 2))); // Left
+                drawPatchTo(patchSize.Mult(new Point(1, 0)), patchSize.Mult(new Point(1, 0)),
+                    new Point(this.box.Size.X - (patchSize.X * 2), patchSize.Y)); // Top
+                drawPatchTo(patchSize.Mult(new Point(2, 1)), patchDestinations[1].Add(new Point(0, patchSize.Y)),
+                    new Point(patchSize.X, this.box.Size.Y - (patchSize.Y * 2))); // Right
+                drawPatchTo(patchSize.Mult(new Point(1, 2)), patchDestinations[2].Add(new Point(patchSize.X, 0)),
+                    new Point(this.box.Size.X - (patchSize.X * 2), patchSize.Y)); // Bottom
+                drawPatchTo(patchSize.Mult(new Point(0, 1)), patchSize.Mult(new Point(0, 1)),
+                    new Point(patchSize.X, this.box.Size.Y - (patchSize.Y * 2))); // Left
 
-                drawPatchTo(patchSize.Mult(new Point(1, 1)), patchSize.Mult(new Point(1, 1)), this.box.Size.Sub(patchSize.Mult(new Point(2, 2)))); // Center
+                drawPatchTo(patchSize.Mult(new Point(1, 1)),
+                    patchSize.Mult(new Point(1, 1)), this.box.Size.Sub(patchSize.Mult(new Point(2, 2)))); // Center
 
-                createImageBitmap(hiddenCanvas.GetImageData()).then((ninePatchImage) => {
+                createImageBitmap(hiddenCanvas.GetImageData()).then(ninePatchImage => {
                     this.ninePatch = ninePatchImage;
                     // hiddenCanvas.Destroy();
                 });
@@ -120,8 +125,8 @@ class NinePatchBoxBackground extends BoxBackground {
 
 class StretchBoxBackground extends BoxBackground {
     private image : ImageBitmap;
-    private imageURL : string;
     private imageSize : Point;
+    private imageURL : string;
 
     constructor(imageURL : string, size : Point, position : Point) {
         super(size, position);
@@ -130,13 +135,13 @@ class StretchBoxBackground extends BoxBackground {
     }
 
     set Image(imageURL : string) {
-        if (imageURL != this.imageURL) {
+        if (imageURL !== this.imageURL) {
             this.imageURL = imageURL;
 
             Loader.LoadImage(imageURL)
             .then(image => {
                 this.image = image;
-                this.imageSize = new Point(this.image.width, this.image.height)
+                this.imageSize = new Point(this.image.width, this.image.height);
             });
         }
     }
@@ -147,7 +152,7 @@ class StretchBoxBackground extends BoxBackground {
                 this.image,
                 { Position : new Point(), Size : this.imageSize },
                 { Position : this.box.Position, Size : this.box.Size }
-            )
+            );
         }
     }
 }
