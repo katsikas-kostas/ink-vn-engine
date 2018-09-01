@@ -4,6 +4,7 @@ var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 var tsify = require("tsify");
 var log = require("fancy-log");
+var del = require("del");
 
 let bundler;
 
@@ -22,7 +23,7 @@ function bundles(profile) {
             packageCache: {}
         }).plugin(tsify);
     
-        bundler = (profile == "watch") ? watchify(_browserify) : _browserify;
+        bundler = (profile === "watch") ? watchify(_browserify) : _browserify;
     }
 
     bundle();
@@ -37,11 +38,14 @@ function bundle() {
 }
 
 gulp.task("default", ["build"], function() { });
-gulp.task("build", [], bundles)
+gulp.task("build", [], bundles);
 gulp.task("watch", [] , function() {
     bundles("watch");
 
     bundler.on("update", bundle);
     bundler.on("log", log.info);
+});
+gulp.task("clean", [], function() {
+    del(["dist/ink-vn-engine.js"]);
 });
 
