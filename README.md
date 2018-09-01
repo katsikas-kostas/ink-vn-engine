@@ -65,6 +65,7 @@ Just include the lib in your HTML file and create a new `InkVN.VN` object, givin
 <html>
     <body>
         <div id="vn"></div>
+        <script src="path/to/ink.js"></script>
         <script src="ink-vn-engine.js"></script>
         <script type="text/javascript">
             window.onload = function() {
