@@ -1,0 +1,12 @@
+.vscode/
+
+node_modules/
+
+example/
+src/
+
+tsconfig.json
+tslint.json
+gulpfile.js
+
+package-lock.json
