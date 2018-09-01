@@ -45,7 +45,7 @@ export class VN {
             });
             this.choiceScreen = new Layers.ChoiceLayer(this.Canvas.Size);
 
-            this.Canvas.OnClick.subscribe(this.click.bind(this));
+            this.Canvas.OnClick.On(this.click.bind(this));
 
             this.continue();
             this.previousTimestamp = 0;
@@ -117,7 +117,7 @@ export class VN {
                         }
                         case "transition": {
                             this.transition = new Layers.Transition(this.Canvas.GetImageData());
-                            this.transition.OnEnd.subscribe((sender, args) => {
+                            this.transition.OnEnd.On((sender, args) => {
                                 this.transition = null;
 
                             });

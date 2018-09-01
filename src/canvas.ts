@@ -1,9 +1,8 @@
-import { EventDispatcher, IEvent } from "strongly-typed-events";
-
+import { LiteEvent } from "./events";
 import { IRect, Point } from "./point";
 
 export class Canvas {
-    private _onClick : EventDispatcher<Canvas, Point> = new EventDispatcher<Canvas, Point>();
+    private _onClick : LiteEvent<Canvas, Point> = new LiteEvent<Canvas, Point>();
     private ctx : CanvasRenderingContext2D;
     private element : HTMLCanvasElement;
 
@@ -99,8 +98,8 @@ export class Canvas {
         this.ctx.translate(position.X, position.Y);
     }
 
-    get OnClick() : IEvent<Canvas, Point> {
-        return this._onClick.asEvent();
+    get OnClick() : LiteEvent<Canvas, Point> {
+        return this._onClick.Expose();
     }
 
     private _click(ev : MouseEvent) : void {
@@ -108,7 +107,7 @@ export class Canvas {
             ev.pageX - this.element.offsetLeft,
             ev.pageY - this.element.offsetTop
         );
-        this._onClick.dispatchAsync(this, clickPosition);
+        this._onClick.Trigger(this, clickPosition);
     }
 }
 
