@@ -1,22 +1,23 @@
-import { Howl } from "howler";
+import * as Pizzicato from "pizzicato";
 
 export class Audio {
-    private bgm : Howl;
+    private bgm : Pizzicato.Sound;
     private bgmURL : string;
-
-    constructor() {
-    }
 
     PlayBGM(bgmURL : string) : void {
         if (bgmURL !== this.bgmURL) {
             this.bgmURL = bgmURL;
 
-            const bgm = new Howl({ src : [bgmURL] });
-            bgm.loop(true);
-            bgm.once("load", () => {
+            const bgm = new Pizzicato.Sound({
+                options : {
+                    loop : true,
+                    path : bgmURL
+                },
+                source : "file"
+            }, () => {
                 if (this.bgm != null) {
                     this.bgm.stop();
-                    this.bgm.unload();
+                    this.bgm.disconnect();
                 }
                 bgm.play();
                 this.bgm = bgm;
@@ -24,17 +25,19 @@ export class Audio {
         }
     }
 
+    PlaySFX(sfxURL : string) : void {
+        const sfx = new Pizzicato.Sound({
+            options : { path : sfxURL },
+            source : "file"
+        }, () => sfx.play());
+    }
+
     StopBGM() : void {
         if (this.bgm != null) {
             this.bgm.stop();
-            this.bgm.unload();
+            this.bgm.disconnect();
             this.bgmURL = null;
             this.bgm = null;
         }
-    }
-
-    PlaySFX(sfxURL : string) : void {
-        const sfx = new Howl({ src : [sfxURL] });
-        sfx.once("load", () => sfx.play());
     }
 }
