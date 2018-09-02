@@ -51,11 +51,12 @@ class ChoiceBox {
 }
 
 export class ChoiceLayer extends GameplayLayer {
-    boundingRect : Point;
-    choiceBoxes : ChoiceBox[] = [];
-    choices : Choice[] = [];
-    screenSize : Point;
-    translation : Point;
+    private boundingRect : Point;
+    private choiceBoxes : ChoiceBox[] = [];
+    private choices : Choice[] = [];
+    private isMouseOnChoice : ChoiceBox = null;
+    private screenSize : Point;
+    private translation : Point;
 
     constructor(screenSize : Point) {
         super();
@@ -78,7 +79,15 @@ export class ChoiceLayer extends GameplayLayer {
         this.translation = this.screenSize.Div(new Point(2)).Sub(this.boundingRect.Div(new Point(2)));
     }
 
-    Click(clickPosition : Point, action : Function) : void {
+    Draw(canvas : Canvas) : void {
+        canvas.Translate(this.translation);
+        for (const choiceBox of this.choiceBoxes) {
+            choiceBox.Draw(canvas);
+        }
+        canvas.Restore();
+    }
+
+    MouseClick(clickPosition : Point, action : Function) : void {
         for (const choiceBox of this.choiceBoxes) {
             const boundingRect = choiceBox.BoundingRect;
             boundingRect.Position = boundingRect.Position.Add(this.translation);
@@ -89,12 +98,24 @@ export class ChoiceLayer extends GameplayLayer {
         }
     }
 
-    Draw(canvas : Canvas) : void {
-        canvas.Translate(this.translation);
-        for (const choiceBox of this.choiceBoxes) {
-            choiceBox.Draw(canvas);
+    MouseMove(mousePosition : Point) : (_ : Canvas) => void {
+        mousePosition = mousePosition.Sub(this.translation);
+        if (this.isMouseOnChoice != null) {
+            return mousePosition.IsInRect(this.isMouseOnChoice.BoundingRect) ? null : (canvas : Canvas) => {
+                canvas.SetCursor("default");
+                this.isMouseOnChoice = null;
+            };
+        } else {
+            for (const choice of this.choiceBoxes) {
+                if (mousePosition.IsInRect(choice.BoundingRect)) {
+                    return (canvas : Canvas) => {
+                        this.isMouseOnChoice = choice;
+                        canvas.SetCursor("pointer");
+                    };
+                }
+            }
         }
-        canvas.Restore();
+        return null;
     }
 
     Step(delta : number) : void { }

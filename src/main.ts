@@ -45,24 +45,13 @@ export class VN {
             });
             this.choiceScreen = new Layers.ChoiceLayer(this.Canvas.Size);
 
-            this.Canvas.OnClick.On(this.click.bind(this));
+            this.Canvas.OnClick.On(this.mouseClick.bind(this));
+            this.Canvas.OnMove.On(this.mouseMove.bind(this));
 
             this.continue();
             this.previousTimestamp = 0;
             this.requestStep();
         });
-    }
-
-    private click(sender : Canvas, clickPosition : Point) : void {
-        if (this.transition != null) {
-            return;
-        }
-
-        if (this.currentScreen instanceof Layers.ChoiceLayer) {
-            this.currentScreen.Click(clickPosition, this.validateChoice.bind(this));
-        } else {
-            this.currentScreen.Click(clickPosition, () => this.continue());
-        }
     }
 
     private computeTags() : void {
@@ -151,6 +140,25 @@ export class VN {
             this.currentScreen = this.choiceScreen;
         } else {
             // TODO It's the end
+        }
+    }
+
+    private mouseClick(sender : Canvas, clickPosition : Point) : void {
+        if (this.transition != null) {
+            return;
+        }
+
+        if (this.currentScreen instanceof Layers.ChoiceLayer) {
+            this.currentScreen.MouseClick(clickPosition, this.validateChoice.bind(this));
+        } else {
+            this.currentScreen.MouseClick(clickPosition, () => this.continue());
+        }
+    }
+
+    private mouseMove(sender : Canvas, mousePosition : Point) : void {
+        const callback = this.currentScreen.MouseMove(mousePosition);
+        if (callback != null) {
+            callback(sender);
         }
     }
 

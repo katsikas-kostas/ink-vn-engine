@@ -202,7 +202,12 @@ export class SpeechLayer extends GameplayLayer {
         );
     }
 
-    Click(clickPosition : Point, action : Function) : void {
+    Draw(canvas : Canvas) : void {
+        this.textBox.Draw(canvas);
+        this.nameBox.Draw(canvas);
+    }
+
+    MouseClick(clickPosition : Point, action : Function) : void {
         if (this.textAppeared) {
             action();
         } else {
@@ -211,9 +216,8 @@ export class SpeechLayer extends GameplayLayer {
         }
     }
 
-    Draw(canvas : Canvas) : void {
-        this.textBox.Draw(canvas);
-        this.nameBox.Draw(canvas);
+    MouseMove(mousePosition : Point) : (_ : Canvas) => void {
+        return null;
     }
 
     Say(text : string, name : string) : void {

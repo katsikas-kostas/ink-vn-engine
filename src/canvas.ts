@@ -3,6 +3,7 @@ import { IRect, Point } from "./point";
 
 export class Canvas {
     private _onClick : LiteEvent<Canvas, Point> = new LiteEvent<Canvas, Point>();
+    private _onMove : LiteEvent<Canvas, Point> = new LiteEvent<Canvas, Point>();
     private ctx : CanvasRenderingContext2D;
     private element : HTMLCanvasElement;
 
@@ -24,6 +25,7 @@ export class Canvas {
         }
 
         this.element.addEventListener("click", this._click.bind(this));
+        this.element.addEventListener("mousemove", this._move.bind(this));
 
         this.Clear();
     }
@@ -92,6 +94,10 @@ export class Canvas {
         this.ctx.restore();
     }
 
+    SetCursor(cursor : string) : void {
+        this.element.style.cursor = cursor;
+    }
+
     Translate(position : Point) : void {
         this.Restore();
         this.ctx.save();
@@ -102,12 +108,23 @@ export class Canvas {
         return this._onClick.Expose();
     }
 
+    get OnMove() : LiteEvent<Canvas, Point> {
+        return this._onMove.Expose();
+    }
+
     private _click(ev : MouseEvent) : void {
-        const clickPosition : Point = new Point(
+        ev.preventDefault();
+        this._onClick.Trigger(this, new Point(
             ev.pageX - this.element.offsetLeft,
             ev.pageY - this.element.offsetTop
-        );
-        this._onClick.Trigger(this, clickPosition);
+        ));
+    }
+
+    private _move(ev : MouseEvent) : void {
+        this._onMove.Trigger(this, new Point(
+            ev.pageX - this.element.offsetLeft,
+            ev.pageY - this.element.offsetTop
+        ));
     }
 }
 

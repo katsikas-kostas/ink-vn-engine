@@ -10,7 +10,8 @@ export abstract class StepLayer extends Layer {
 }
 
 export abstract class GameplayLayer extends StepLayer {
-    abstract Click(clickPosition : Point, action : Function) : void;
+    abstract MouseClick(clickPosition : Point, action : Function) : void;
+    abstract MouseMove(mousePosition : Point) : (_ : Canvas) => void;
 }
 
 export * from "./background";
