@@ -1,6 +1,6 @@
 {
   "name": "ink-vn-engine",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Paul Joannon <hello@pauljoannon.com>",
   "license": "MIT",
   "repository": {
@@ -11,7 +11,7 @@
     "lib": "./lib"
   },
   "dependencies": {
-    "inkjs": "^1.7.1"
+    "inkjs": "^1.8.0-beta.1"
   },
   "optionalDependencies": {
     "pizzicato": "^0.6.3"
