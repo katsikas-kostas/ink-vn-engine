@@ -28,7 +28,7 @@ export class VN {
 
         fetch(storyFilename).then(response => response.text()).then(rawStory => {
             this.Story = new InkJs.Story(rawStory);
-            Config.Load(this.Story.globalTags);
+            Config.Load(this.Story.globalTags || []);
             this.Canvas.Size = Config.ScreenSize;
 
             this.background = new Layers.Background();

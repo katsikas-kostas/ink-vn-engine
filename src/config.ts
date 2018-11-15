@@ -24,7 +24,7 @@ class ClassConfig {
             } catch (e) {
                 if (e instanceof TypeError) {
                     error(tags[i]);
-                    break;
+                    continue;
                 }
             }
 
